@@ -1,0 +1,9 @@
+.map-form-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.map-form-container > .MuiFormControl-root,
+.map-form-container > .MuiButtonBase-root {
+  margin: 1rem;
+}

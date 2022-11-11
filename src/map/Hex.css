@@ -1,0 +1,17 @@
+.hex-cell {
+  /* transition: visibility 0s, opacity 0.5s linear; */
+  transition: all 0.5s;
+}
+
+.hex-cell:hover {
+  fill: #61dafb99
+}
+
+.hex-cell-ship:hover .ship-menu {
+  display: inline !important;
+  fill: #61dafb99
+}
+
+.ship-menu {
+  display: none;
+}
