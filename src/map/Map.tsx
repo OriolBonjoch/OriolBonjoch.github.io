@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useRef, useState } from "react";
 import ShipForm from "../ships/ShipForm";
 import { MapContext } from "./map.context";
 import Hex, { calcCoords } from "./Hex";
@@ -15,18 +15,23 @@ export type ShipAction = {
   toy: number;
 };
 
+const bound = (value: number, min: number, max: number) => value < min ? min : (value > max ? max : value);
+
 export default function HexMap() {
   const [action, setAction] = useState<ShipAction>();
-  const { size, isCreated, viewport } = useContext(MapContext);
-  const { ships, move, rotate } = useContext(ShipContext);
+  const { size, isCreated, viewport, dragBox, dragTo } = useContext(MapContext);
+  const { ships } = useContext(ShipContext);
 
   const [createShip, setCreateShip] = useState<{ x: number; y: number } | null>(
     null
   );
 
-  const { ratio } = useWindowSize();
+  const clickStart = useRef<null | {x: number, y: number}>(null);
+  const [offset, setOffset] = useState<[number, number]>([0,0]);
+  const { ratio, width } = useWindowSize();
   const svgSize = { width: "100vw", height: `calc(${Math.floor(100 * ratio)}vw - 64px)` };
   const [vp0, vp1, vp2, vp3] = viewport;
+  const rate = vp2 / width;
 
   if (!isCreated) {
     return null;
@@ -39,26 +44,38 @@ export default function HexMap() {
 
   return (
     <>
-      <svg viewBox={`${vp0} ${vp1} ${vp2} ${vp3}`} className="hex-map" style={svgSize}>
+      <svg
+        viewBox={`${vp0 + offset[0]} ${vp1 + offset[1]} ${vp2} ${vp3}`}
+        className="hex-map"
+        style={svgSize}
+        onMouseMove={(ev) => {
+          if (clickStart.current) {
+            setOffset([
+              bound(
+                vp0 + (clickStart.current.x - ev.clientX) * rate,
+                dragBox.minX,
+                dragBox.maxX
+              ) - vp0,
+              bound(
+                vp1 + (clickStart.current.y - ev.clientY) * rate,
+                dragBox.minY,
+                dragBox.maxY
+              ) - vp1,
+            ]);
+          }
+        }}
+        onMouseDown={(ev) => {
+          clickStart.current = { x: ev.clientX, y: ev.clientY };
+        }}
+        onMouseUp={(ev) => {
+          dragTo(offset);
+          setOffset([0, 0]);
+          clickStart.current = null;
+        }}
+      >
         {points.map(({ i, j }) => {
           const ship = ships.find((s) => s.x === i && s.y === j);
           const onClick = () => {
-            if (action) {
-              if (action.kind === "move" && !ship) {
-                move(action.ship.name, action.tox, action.toy);
-              } else if (action.kind === "rotate") {
-                const [ax, ay] = calcCoords(action.ship.x, action.ship.y);
-                const [tx, ty] = calcCoords(action.tox, action.toy);
-                const newRotation = Math.floor(
-                  (Math.atan2(ay - ty, ax - tx) * 6) / Math.PI + 0.5
-                );
-                rotate(action.ship.name, newRotation);
-              }
-
-              setAction(undefined);
-              return;
-            }
-
             if (!ship) {
               setCreateShip({ x: i, y: j });
             }
@@ -88,9 +105,9 @@ export default function HexMap() {
                 ship && setAction({ kind, tox: i, toy: j, ship })
               }
               onClick={onClick}
-              onMouseEnter={() =>
-                setAction((prev) => (prev ? { ...prev, tox: i, toy: j } : prev))
-              }
+              // onMouseEnter={() =>
+              //   setAction((prev) => (prev ? { ...prev, tox: i, toy: j } : prev))
+              // }
             />
           );
         })}

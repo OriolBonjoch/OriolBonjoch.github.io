@@ -13,13 +13,13 @@ import { MapContext } from "./map/map.context";
 import { ShipContext } from "./ships/ship.context";
 
 export function HexMapBar() {
-  const { zoomX, size, isCreated, createMap, changeView } = useContext(MapContext);
+  const { zoomX, size, isCreated, createMap, changeZoom } = useContext(MapContext);
   const { ships } = useContext(ShipContext);
   const [anchorMenuFocus, setAnchorMenuFocus] = useState<HTMLElement>();
 
   useEffect(() => {
-    changeView(null, size.x);
-  },[changeView, size.x]);
+    changeZoom(size.x);
+  },[changeZoom, size.x]);
 
   return (
     <AppBar position="sticky">
@@ -39,7 +39,8 @@ export function HexMapBar() {
           <>
             {size.x > 5 ? (
               <Slider
-                aria-label="Volume"
+                aria-label="Size"
+                sx={{ mx: 2 }}
                 value={zoomX}
                 min={3}
                 max={size.x}
@@ -47,10 +48,9 @@ export function HexMapBar() {
                 step={0.1}
                 onChange={(_ev, v) => {
                   if (typeof v === "number") {
-                    changeView(null, v);
+                    changeZoom(v);
                   }
                 }}
-                sx={{ mx: 2 }}
               />
             ) : null}
             {ships.length ? (
@@ -81,8 +81,8 @@ export function HexMapBar() {
                   onClose={() => setAnchorMenuFocus(undefined)}
                 >
                   {ships.map((s) => (
-                    <MenuItem>
-                      <Typography key={s.name} textAlign="center">
+                    <MenuItem key={s.name}>
+                      <Typography textAlign="center">
                         {s.name}
                       </Typography>
                     </MenuItem>
@@ -93,7 +93,7 @@ export function HexMapBar() {
             <IconButton
               size="large"
               aria-label="zoom all"
-              onClick={() => changeView(null, size.x)}
+              onClick={() => changeZoom(size.x)}
             >
               <ZoomOutMap />
             </IconButton>
