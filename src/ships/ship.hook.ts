@@ -20,7 +20,8 @@ function reducer(state: StateType, action: ActionType): StateType {
             ...oldShip,
             x: action.payload.x || oldShip.x,
             y: action.payload.y || oldShip.y,
-            rotation: action.payload.rotation || oldShip.rotation,
+            rotation: action.payload.direction || oldShip.rotation,
+            speed: oldShip.speed + (action.payload.acc ?? 0)
           },
         },
       };
@@ -59,18 +60,23 @@ export function useShips() {
         },
       } as ActionType);
     },
-    move: (name: string, x: number, y: number) => {
+    move: (name: string, x: number, y: number, acc: number, direction?: number) => {
       dispatch({
         type: "FREE_MOVE",
-        payload: { name, x, y }
+        payload: { name, x, y, acc, direction }
       });
     },
     rotate: (name: string, direction: number) => {
       dispatch({
         type: "FREE_MOVE",
-        payload: { name, rotation: direction }
+        payload: { name, direction }
       });
-      
     },
+    deleteShip: (name: string) => {
+      dispatch({
+        type: "DELETE_SHIP",
+        payload: { name },
+      });
+    }
   };
 }

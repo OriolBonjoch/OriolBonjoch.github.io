@@ -58,7 +58,6 @@ export default function ShipForm(props: {
   const [speed, setSpeed] = useState(0);
   const [name, setName] = useState(`Nave #${Math.floor(Math.random() * 1000)}`);
   const [hex, setHex] = useState("#F44E3B");
-
   const { create } = useContext(ShipContext);
 
   return (
@@ -94,6 +93,12 @@ export default function ShipForm(props: {
           colors={["#F44E3B", "#FE9200", "#FCDC00", "#B80000", "#5300EB"]}
           color={hex}
           onChange={(color) => setHex(color.hex)}
+        />
+        <TextField
+          label="Rotación"
+          type="number"
+          value={(rot < 0 ? rot + 12 : rot) + 1}
+          onChange={(ev) => setRot(parseInt(ev.target.value) % 12)}
         />
         <TextField
           label="Velocidad inicial"

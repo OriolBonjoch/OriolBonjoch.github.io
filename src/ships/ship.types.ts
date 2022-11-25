@@ -4,7 +4,8 @@ type FreeAction = {
     name: string;
     x?: number;
     y?: number;
-    rotation?: number;
+    direction?: number;
+    acc?: number;
   };
 };
 

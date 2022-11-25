@@ -1,26 +1,31 @@
-import { useContext, useRef, useState } from "react";
+import { useCallback, useContext, useRef, useState } from "react";
 import ShipForm from "../ships/ShipForm";
 import { MapContext } from "./map.context";
-import Hex, { calcCoords } from "./Hex";
+import Hex from "./Hex";
 import { ShipContext } from "../ships/ship.context";
+import { useWindowSize } from "../utils/window-size.hook";
 import { ShipType } from "../ships/ship.types";
 import "./Map.css";
-import { useWindowSize } from "../utils/window-size.hook";
-
-export type ShipActionKind = "rotate" | "move" | "calc";
-export type ShipAction = {
-  kind: ShipActionKind;
-  ship: ShipType;
-  tox: number;
-  toy: number;
-};
 
 const bound = (value: number, min: number, max: number) => value < min ? min : (value > max ? max : value);
+const MAX_ACCELERATION = 9;
+const rotTable = (shipRot: number, newRot: number) => {
+  return [0, 1, 1, 2, 2, 3, 4, 3, 2, 2, 1, 1, 0][Math.abs(shipRot - newRot) % 12];
+}
+
+export type MoveType = {
+  x: number;
+  y: number;
+  name: string;
+  isBase: boolean;
+  acc?: number;
+  rot?: number;
+}
 
 export default function HexMap() {
-  const [action, setAction] = useState<ShipAction>();
   const { size, isCreated, viewport, dragBox, dragTo } = useContext(MapContext);
-  const { ships } = useContext(ShipContext);
+  const { ships, move } = useContext(ShipContext);
+  const [shipMoves, setShipMoves] = useState<MoveType[]>([]);
 
   const [createShip, setCreateShip] = useState<{ x: number; y: number } | null>(
     null
@@ -32,6 +37,48 @@ export default function HexMap() {
   const svgSize = { width: "100vw", height: `calc(${Math.floor(100 * ratio)}vw - 64px)` };
   const [vp0, vp1, vp2, vp3] = viewport;
   const rate = vp2 / width;
+
+  const onMoveStart = useCallback((ship: ShipType) => {
+    const moves: MoveType[] = [
+      { x: ship.x, y: ship.y, isBase: true, name: ship.name },
+    ];
+    const addMoves = (x: number, y: number, newRot: number, dist: number) => {
+      const acc = dist - ship.speed + rotTable(newRot, ship.rotation);
+      if (!ships.some(s => s.x === x && s.y === y) && Math.abs(acc) <= MAX_ACCELERATION) {
+        moves.push({ x, y, acc, name: ship.name, rot: newRot, isBase: false });
+      }
+    };
+
+    for (let y = ship.y + 1; y < size.y; y++) addMoves(ship.x, y, 9, y - ship.y);
+    for (let y = ship.y - 1; y >= 0; y--) addMoves(ship.x, y, 3, ship.y - y);
+    for (let x = ship.x - 1; x >= 0; x--) {
+      const y = ship.y - (ship.x % 2 ? Math.floor : Math.ceil)((ship.x - x) / 2);
+      if (y < 0) break;
+      addMoves(x, y, 1, ship.x - x);
+    }
+    for (let x = ship.x - 1; x >= 0; x--) {
+      const y = ship.y + (ship.x % 2 ? Math.ceil : Math.floor)((ship.x - x) / 2);
+      if (y >= size.y) break;
+      addMoves(x, y, 11, ship.x - x);
+    }
+    for (let x = ship.x + 1; x < size.x; x++) {
+      const y = ship.y - (ship.x % 2 ? Math.floor : Math.ceil)((x - ship.x) / 2);
+      if (y < 0) break;
+      addMoves(x, y, 5, x - ship.x);
+    }
+    for (let x = ship.x + 1; x < size.x; x++) {
+      const y = ship.y + (ship.x % 2 ? Math.ceil : Math.floor)((x - ship.x) / 2);
+      if (y >= size.y) break;
+      addMoves(x, y, 7, x - ship.x);
+    }
+
+    setShipMoves(moves);
+  },[ships, size.x, size.y]);
+
+  const onMoveEnd = useCallback(({ name, x, y, rot, acc }: MoveType) => {
+    move(name, x, y, acc!, rot);
+    setShipMoves([]);
+  },[move]);
 
   if (!isCreated) {
     return null;
@@ -75,39 +122,26 @@ export default function HexMap() {
       >
         {points.map(({ i, j }) => {
           const ship = ships.find((s) => s.x === i && s.y === j);
-          const onClick = () => {
-            if (!ship) {
-              setCreateShip({ x: i, y: j });
-            }
-          };
-
-          const shipMoved = ship ? { ...ship } : undefined;
-          if (
-            action?.kind === "rotate" &&
-            action.ship.name === shipMoved?.name
-          ) {
-            const [ax, ay] = calcCoords(action.ship.x, action.ship.y);
-            const [tx, ty] = calcCoords(action.tox, action.toy);
-            shipMoved.rotation = Math.floor(
-              (Math.atan2(ay - ty, ax - tx) * 6) / Math.PI + 0.5
-            );
-          }
+          const pointMove = shipMoves.find(m => m.x === i && m.y === j);
 
           return (
             <Hex
-              ship={shipMoved}
+              ship={ship}
               key={`${i}_${j}`}
               x={i}
               y={j}
               hasHover
-              action={action}
-              startAction={(kind: ShipActionKind) =>
-                ship && setAction({ kind, tox: i, toy: j, ship })
+              movement={pointMove}
+              onClick={
+                ship
+                  ? pointMove?.isBase
+                    ? () => setShipMoves([])
+                    : undefined
+                  : pointMove
+                  ? () => onMoveEnd(pointMove)
+                  : () => setCreateShip({ x: i, y: j })
               }
-              onClick={onClick}
-              // onMouseEnter={() =>
-              //   setAction((prev) => (prev ? { ...prev, tox: i, toy: j } : prev))
-              // }
+              onMoveStart={ship ? () => onMoveStart(ship) : undefined}
             />
           );
         })}
