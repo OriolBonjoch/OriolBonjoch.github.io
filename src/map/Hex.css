@@ -14,6 +14,7 @@
 
 .hex-cell-ship:hover .ship-menu path {
   fill: #26515e99;
+  stroke: none;
 }
 
 .hex-cell text {

@@ -94,12 +94,12 @@ export default function ShipForm(props: {
           color={hex}
           onChange={(color) => setHex(color.hex)}
         />
-        <TextField
+        {/* <TextField
           label="Rotación"
           type="number"
           value={(rot < 0 ? rot + 12 : rot) + 1}
           onChange={(ev) => setRot(parseInt(ev.target.value) % 12)}
-        />
+        /> */}
         <TextField
           label="Velocidad inicial"
           type="number"
