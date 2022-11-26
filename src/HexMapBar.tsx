@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Slider from "@mui/material/Slider";
@@ -12,14 +12,50 @@ import Typography from "@mui/material/Typography";
 import { MapContext } from "./map/map.context";
 import { ShipContext } from "./ships/ship.context";
 
+type SavedPlay = {
+  ships: {
+    name: string;
+    x: number;
+    y: number;
+    rotation: number;
+    speed: number;
+    color: string;
+  }[];
+  map: { x: number; y: number };
+};
+
 export function HexMapBar() {
-  const { zoomX, size, isCreated, createMap, changeZoom } = useContext(MapContext);
-  const { ships } = useContext(ShipContext);
+  const { zoomX, size, isCreated, createMap, changeZoom, dragToShip } =
+    useContext(MapContext);
+  const { ships, createShip } = useContext(ShipContext);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [anchorMenuFocus, setAnchorMenuFocus] = useState<HTMLElement>();
+
+  const load = useCallback(() => {
+    setAnchorEl(null);
+    const jsonData = window.localStorage.getItem("guardado");
+    if (!jsonData) return;
+    const data = JSON.parse(jsonData) as SavedPlay;
+
+    createMap(`${data.map.x}`, `${data.map.y}`);
+    data.ships.forEach((s) => {
+      createShip(s.name, s.x, s.y, s.color, s.speed, 0, s.rotation);
+    });
+  }, [createMap, createShip]);
+
+  const save = useCallback(() => {
+    setAnchorEl(null);
+    const data = {
+      ships: ships.map(({ acceleration, ...s }) => s),
+      map: size,
+    };
+    const jsonData = JSON.stringify(data);
+    window.localStorage.setItem("guardado", jsonData);
+  }, [ships, size]);
 
   useEffect(() => {
     changeZoom(size.x);
-  },[changeZoom, size.x]);
+  }, [changeZoom, size.x]);
 
   return (
     <AppBar position="sticky">
@@ -31,10 +67,36 @@ export function HexMapBar() {
           aria-label="open drawer"
           aria-controls="menu-appbar"
           aria-haspopup="true"
-          onClick={() => createMap()}
+          onClick={(ev) => setAnchorEl(ev.currentTarget)}
         >
           <MenuIcon />
         </IconButton>
+        <Menu
+          id="menu-appbar"
+          anchorEl={anchorEl}
+          anchorOrigin={{
+            vertical: "top",
+            horizontal: "left",
+          }}
+          keepMounted
+          transformOrigin={{
+            vertical: "top",
+            horizontal: "right",
+          }}
+          open={!!anchorEl}
+          onClose={() => setAnchorEl(null)}
+        >
+          <MenuItem
+            onClick={() => {
+              setAnchorEl(null);
+              createMap();
+            }}
+          >
+            Nuevo mapa
+          </MenuItem>
+          {isCreated ? <MenuItem onClick={save}>Guardar</MenuItem> : null}
+          <MenuItem onClick={load}>Cargar</MenuItem>
+        </Menu>
         {isCreated ? (
           <>
             {size.x > 5 ? (
@@ -44,8 +106,7 @@ export function HexMapBar() {
                 value={zoomX}
                 min={3}
                 max={size.x}
-                marks={undefined}
-                step={0.1}
+                step={1}
                 onChange={(_ev, v) => {
                   if (typeof v === "number") {
                     changeZoom(v);
@@ -81,10 +142,11 @@ export function HexMapBar() {
                   onClose={() => setAnchorMenuFocus(undefined)}
                 >
                   {ships.map((s) => (
-                    <MenuItem key={s.name}>
-                      <Typography textAlign="center">
-                        {s.name}
-                      </Typography>
+                    <MenuItem
+                      key={s.name}
+                      onClick={() => dragToShip([s.x, s.y])}
+                    >
+                      <Typography textAlign="center">{s.name}</Typography>
                     </MenuItem>
                   ))}
                 </Menu>

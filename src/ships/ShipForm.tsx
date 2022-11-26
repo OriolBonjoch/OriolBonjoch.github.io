@@ -58,7 +58,7 @@ export default function ShipForm(props: {
   const [speed, setSpeed] = useState(0);
   const [name, setName] = useState(`Nave #${Math.floor(Math.random() * 1000)}`);
   const [hex, setHex] = useState("#F44E3B");
-  const { create } = useContext(ShipContext);
+  const { createShip } = useContext(ShipContext);
 
   return (
     <SwipeableDrawer
@@ -109,7 +109,7 @@ export default function ShipForm(props: {
         <Button
           variant="contained"
           onClick={() => {
-            create(name, x, y, hex, speed, 0, rot);
+            createShip(name, x, y, hex, speed, 0, rot);
             onClose();
           }}
         >
