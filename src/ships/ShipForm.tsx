@@ -101,6 +101,7 @@ export default function ShipForm(props: {
           value={acceleration}
           onChange={(ev) => setAcceleration(parseInt(ev.target.value))}
         />
+        <TextField label="Rotación" type="number" value={rot} />
         <TextField
           label="Velocidad inicial"
           type="number"
@@ -110,7 +111,7 @@ export default function ShipForm(props: {
         <Button
           variant="contained"
           onClick={() => {
-            createShip(name, x, y, hex, speed, acceleration, rot);
+            createShip(name, x, y, hex, speed, (acceleration + 12) % 12, rot);
             onClose();
           }}
         >

@@ -1,5 +1,5 @@
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import HexMap from "./map/Map";
+import HexMap from "./map/HexMap";
 import MapForm from "./map/MapForm";
 import { MapContext, useMap } from "./map/map.context";
 import { ShipContext } from "./ships/ship.context";
@@ -10,7 +10,7 @@ import "./App.css";
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
-  }
+  },
 });
 
 function App() {

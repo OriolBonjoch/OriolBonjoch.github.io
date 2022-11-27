@@ -2,7 +2,7 @@ import { ShipType } from "../ships/ship.types";
 import "./Hex.css";
 import { useContext, useState } from "react";
 import { ShipContext } from "../ships/ship.context";
-import { MoveType } from "./Map";
+import { MoveType } from "./HexMap.hook";
 
 const sqrt3 = Math.floor(1000 * Math.sqrt(3)) / 1000;
 const halfsqrt3 = sqrt3 / 2;
