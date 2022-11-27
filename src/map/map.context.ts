@@ -13,12 +13,12 @@ const bound = (value: number, min: number, max: number) =>
   value < min ? min : value > max ? max : value;
 
 export function useMap() {
-  const [size, setSize] = useState<SizeType>({ x: 10, y: 5 });
+  const [size, setSize] = useState<SizeType>({ x: 20, y: 10 });
+  const [center, setCenter] = useState<SizeType>({ x: 10, y: 5 });
   const [isCreated, setIsCreated] = useState(true);
-  const [zoomX, setZoomX] = useState(10);
+  const [zoomX, setZoomX] = useState(20);
   const { ratio } = useWindowSize();
 
-  const [center, setCenter] = useState<SizeType>({ x: 5, y: 2.5 });
   const [viewportSize, setViewportSize] = useState([1, 1]);
   const zoomY = useMemo(
     () => (viewportSize[1] - halfsqrt3 - 2 * margin) / sqrt3,
@@ -120,8 +120,8 @@ export const MapContext = createContext<ReturnType<typeof useMap>>({
   isCreated: true,
   viewport: [0, 0, 1, 1],
   dragBox: { minX: 0, minY: 0, maxX: 0, maxY: 0 },
-  zoomX: 10,
-  size: { x: 10, y: 5 },
+  zoomX: 20,
+  size: { x: 20, y: 10 },
   createMap: () => null,
   changeZoom: () => null,
   dragTo: () => null,

@@ -97,6 +97,18 @@ export default function Hex({
             {movement.acc}
           </text>
         ) : undefined}
+        {/* ) : (
+          <text
+            x={0.07}
+            dominantBaseline="middle"
+            textAnchor="middle"
+            stroke="none"
+            fill={movement ? "orange" : undefined}
+            fontSize="0.5"
+          >
+            {x}-{y}
+          </text>
+        )} */}
         {ship && rotation === null && !movement?.isBase ? (
           <g className="ship-menu">
             <g
