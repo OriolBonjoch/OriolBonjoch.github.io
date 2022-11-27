@@ -101,7 +101,6 @@ export default function ShipForm(props: {
           value={acceleration}
           onChange={(ev) => setAcceleration(parseInt(ev.target.value))}
         />
-        <TextField label="Rotación" type="number" value={rot} />
         <TextField
           label="Velocidad inicial"
           type="number"
