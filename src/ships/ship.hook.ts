@@ -1,5 +1,5 @@
 import { useReducer } from "react";
-import { ActionType, StateType } from "./ship.types";
+import { ActionType, ShipType, StateType } from "./ship.types";
 
 function reducer(state: StateType, action: ActionType): StateType {
   switch (action.type) {
@@ -18,13 +18,12 @@ function reducer(state: StateType, action: ActionType): StateType {
           ...state.ships,
           [action.payload.name]: {
             ...oldShip,
-            x: action.payload.x || oldShip.x,
-            y: action.payload.y || oldShip.y,
-            rotation: action.payload.direction || oldShip.rotation,
-            speed: oldShip.speed + (action.payload.acc ?? 0),
+            [action.payload.property]: action.payload.value,
           },
         },
       };
+    case "PREPARE_MOVE": // TODO
+    case "MOVE":
     default:
       return state;
   }
@@ -60,29 +59,39 @@ export function useShips() {
         },
       } as ActionType);
     },
-    move: (
-      name: string,
-      x: number,
-      y: number,
-      acc: number,
-      direction?: number
-    ) => {
-      dispatch({
-        type: "FREE_MOVE",
-        payload: { name, x, y, acc, direction },
-      });
-    },
-    rotate: (name: string, direction: number) => {
-      dispatch({
-        type: "FREE_MOVE",
-        payload: { name, direction },
-      });
-    },
     deleteShip: (name: string) => {
       dispatch({
         type: "DELETE_SHIP",
         payload: { name },
       });
     },
+    updateShip: <T extends keyof Omit<ShipType, "name">>(
+      name: string,
+      property: T,
+      value: ShipType[T]
+    ) => {
+      dispatch({
+        type: "FREE_MOVE",
+        payload: { name, property, value },
+      });
+    },
+    prepareShip: (
+      name: string,
+      acceleration: number,
+      rotation: number,
+      x: number,
+      y: number
+    ) =>
+      dispatch({
+        type: "PREPARE_MOVE",
+        payload: {
+          name,
+          acceleration,
+          rotation,
+          x,
+          y,
+        },
+      }),
+    moveShip: () => null,
   };
 }

@@ -1,17 +1,20 @@
 import React, { useContext, useRef, useState } from "react";
-import ShipForm from "../ships/ShipForm";
+import CreateShipForm from "../ships/CreateShipForm";
 import { MapContext } from "./map.context";
 import Hex from "./Hex";
 import { ShipContext } from "../ships/ship.context";
 import { useHexMap } from "./HexMap.hook";
+import { ShipType } from "../ships/ship.types";
+import UpdateShipForm from "../ships/UpdateShipForm";
 import "./HexMap.css";
 
 type SizeType = { x: number; y: number };
 
 export default function HexMap() {
   const { size, isCreated, viewport } = useContext(MapContext);
-  const { ships } = useContext(ShipContext);
+  const { ships, prepareShip } = useContext(ShipContext);
   const [createShip, setCreateShip] = useState<SizeType | null>(null);
+  const [updateShip, setUpdateShip] = useState<ShipType | null>(null);
 
   const clickStart = useRef<SizeType | null>(null);
   const [vp0, vp1, vp2, vp3] = viewport;
@@ -21,9 +24,8 @@ export default function HexMap() {
     offset,
     onMouseMove,
     onMouseUp,
-    onHexMoveStart,
     onHexMoveCancel,
-    onHexMoveEnd,
+    onHexMoveStart,
   } = useHexMap();
 
   if (!isCreated) {
@@ -63,18 +65,33 @@ export default function HexMap() {
                 ship
                   ? pointMove?.isBase
                     ? () => onHexMoveCancel()
-                    : undefined
+                    : () => setUpdateShip(ship)
                   : pointMove && !pointMove.isBase
-                  ? () => onHexMoveEnd(pointMove)
+                  ? () => {
+                      prepareShip(
+                        pointMove.name,
+                        pointMove.acc,
+                        pointMove.rot,
+                        pointMove.x,
+                        pointMove.y
+                      );
+                      onHexMoveCancel();
+                    }
                   : () => setCreateShip({ x: i, y: j })
               }
-              onMoveStart={ship ? () => onHexMoveStart(ship) : undefined}
             />
           );
         })}
       </svg>
       {createShip ? (
-        <ShipForm {...createShip} onClose={() => setCreateShip(null)} />
+        <CreateShipForm {...createShip} onClose={() => setCreateShip(null)} />
+      ) : null}
+      {updateShip ? (
+        <UpdateShipForm
+          shipname={updateShip.name}
+          onClose={() => setUpdateShip(null)}
+          onMoveStart={onHexMoveStart}
+        />
       ) : null}
     </>
   );

@@ -19,7 +19,6 @@ export default function Hex({
   hasHover,
   movement,
   onClick,
-  onMoveStart,
 }: {
   x: number;
   y: number;
@@ -27,12 +26,10 @@ export default function Hex({
   hasHover?: boolean;
   movement?: MoveType;
   onClick?: () => void;
-  onMoveStart?: () => void;
 }) {
   const [x0, y0] = calcCoords(x, y);
   const hexId = `hex_${x}_${y}`;
   const [rotation, setRotation] = useState<number | null>(null);
-  const { rotate, deleteShip } = useContext(ShipContext);
 
   const rotateMouse = (ev: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     const hex = document.querySelector("#" + hexId);
@@ -45,13 +42,6 @@ export default function Hex({
     setRotation(Math.floor((Math.atan2(ay - ty, ax - tx) * 6) / Math.PI + 0.5));
   };
 
-  const onRotateEnd = () => {
-    if (ship && rotation !== null) {
-      rotate(ship.name, rotation);
-      setRotation(null);
-    }
-  };
-
   const degrees = ship
     ? 30 * ((rotation === null ? ship.rotation : rotation) % 12)
     : 0;
@@ -62,10 +52,7 @@ export default function Hex({
         id={hexId}
         transform={`translate(${x0} ${y0})`}
         className={hasHover ? `hex-cell${ship ? "-ship" : ""}` : undefined}
-        onClick={() => {
-          if (onClick && (!ship || movement?.isBase)) onClick();
-          onRotateEnd();
-        }}
+        onClick={onClick}
         onMouseMove={rotation === null ? undefined : rotateMouse}
       >
         <path
@@ -109,37 +96,6 @@ export default function Hex({
             {x}-{y}
           </text>
         )} */}
-        {ship && rotation === null && !movement?.isBase ? (
-          <g className="ship-menu">
-            <g
-              transform="translate(0 -0.8)"
-              onClick={() => setRotation(ship.rotation)}
-            >
-              <circle r="0.3" />
-              <path d="M 0.1412 -0.1413 C 0.105 -0.1775 0.0553 -0.2 0 -0.2 c -0.1105 0 -0.1998 0.0895 -0.1998 0.2 s 0.0892 0.2 0.1998 0.2 c 0.0932 0 0.171 -0.0638 0.1933 -0.15 h -0.052 c -0.0205 0.0583 -0.076 0.1 -0.1413 0.1 c -0.0828 0 -0.15 -0.0673 -0.15 -0.15 s 0.0673 -0.15 0.15 -0.15 c 0.0415 0 0.0785 0.0172 0.1055 0.0445 L 0.025 -0.025 h 0.175 V -0.2 l -0.0588 0.0588 z" />
-            </g>
-            <g
-              transform="rotate(-60 0 0) translate(0 -0.8)"
-              onClick={onMoveStart}
-            >
-              <circle r="0.3" />
-              <path
-                transform="rotate(60 0 0)"
-                d="M 0 -0.1 V -0.2 l 0.2 0.2 l -0.2 0.2 v -0.1 H -0.2 V -0.1 z"
-              />
-            </g>
-            <g
-              transform="rotate(-120 0 0) translate(0 -0.8)"
-              onClick={() => deleteShip(ship.name)}
-            >
-              <circle r="0.3" />
-              <path
-                transform="rotate(120 0 0)"
-                d="M -0.15 0.175 c 0 0.0275 0.0225 0.05 0.05 0.05 h 0.2 c 0.0275 0 0.05 -0.0225 0.05 -0.05 V -0.125 H -0.15 v 0.3 z M 0.175 -0.2 h -0.0875 l -0.025 -0.025 h -0.125 l -0.025 0.025 H -0.175 v 0.05 h 0.35 V -0.2 z"
-              />
-            </g>
-          </g>
-        ) : null}
       </g>
     </>
   );

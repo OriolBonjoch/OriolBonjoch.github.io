@@ -2,35 +2,25 @@ type FreeAction = {
   type: "FREE_MOVE";
   payload: {
     name: string;
-    x?: number;
-    y?: number;
-    direction?: number;
-    acc?: number;
+    property: keyof Omit<ShipType, "name">;
+    value: unknown;
   };
 };
 
-type SpeedAction = {
-  type: "CHANGE_SPEED";
+type PrepareMoveAction = {
+  type: "PREPARE_MOVE";
   payload: {
     name: string;
-    speed: number;
-  };
-};
-
-type AccelerationAction = {
-  type: "CHANGE_ACCELERATION";
-  payload: {
-    name: string;
+  } & {
     acceleration: number;
+    rotation: number;
+    x: number;
+    y: number;
   };
 };
 
-type RotateAction = {
-  type: "CHANGE_ROTATION";
-  payload: {
-    name: string;
-    rotation: number;
-  };
+type MoveAction = {
+  type: "MOVE";
 };
 
 type DeleteAction = {
@@ -53,9 +43,8 @@ type CreateAction = {
 
 export type ActionType =
   | FreeAction
-  | SpeedAction
-  | AccelerationAction
-  | RotateAction
+  | PrepareMoveAction
+  | MoveAction
   | DeleteAction
   | CreateAction;
 
@@ -81,4 +70,4 @@ export type ShipType = {
   speed: number;
   acceleration: number;
   color: string;
-}
+};

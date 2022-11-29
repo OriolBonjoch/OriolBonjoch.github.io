@@ -6,7 +6,6 @@ import React, {
   useState,
 } from "react";
 import { MapContext } from "./map.context";
-import { ShipContext } from "../ships/ship.context";
 import { useWindowSize } from "../utils/window-size.hook";
 import { ShipType } from "../ships/ship.types";
 import { calcCoords } from "./Hex";
@@ -114,7 +113,6 @@ function getMoves(
 
 export const useHexMap = function () {
   const { size, viewport, dragBox, dragTo } = useContext(MapContext);
-  const { move } = useContext(ShipContext);
   const [shipMoves, setShipMoves] = useState<MoveType[]>([]);
 
   const clickStart = useRef<SizeType | null>(null);
@@ -142,26 +140,6 @@ export const useHexMap = function () {
       setShipMoves(moves);
     },
     [size]
-  );
-
-  const onHexMoveEnd = useCallback(
-    ({
-      name,
-      x,
-      y,
-      rot,
-      acc,
-    }: {
-      x: number;
-      y: number;
-      name: string;
-      acc: number;
-      rot: number;
-    }) => {
-      move(name, x, y, acc, rot);
-      setShipMoves([]);
-    },
-    [move]
   );
 
   const onMouseMove = useCallback(
@@ -198,7 +176,6 @@ export const useHexMap = function () {
     svgSize,
     offset,
     onHexMoveStart,
-    onHexMoveEnd,
     onHexMoveCancel: () => setShipMoves([]),
     onMouseMove,
     onMouseUp,
