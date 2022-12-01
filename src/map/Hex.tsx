@@ -1,8 +1,6 @@
 import { ShipType } from "../ships/ship.types";
+import { useState } from "react";
 import "./Hex.css";
-import { useContext, useState } from "react";
-import { ShipContext } from "../ships/ship.context";
-import { MoveType } from "./HexMap.hook";
 
 const sqrt3 = Math.floor(1000 * Math.sqrt(3)) / 1000;
 const halfsqrt3 = sqrt3 / 2;
@@ -24,7 +22,10 @@ export default function Hex({
   y: number;
   ship?: ShipType;
   hasHover?: boolean;
-  movement?: MoveType;
+  movement?: {
+    isBase: boolean;
+    acc?: number;
+  };
   onClick?: () => void;
 }) {
   const [x0, y0] = calcCoords(x, y);
@@ -42,9 +43,7 @@ export default function Hex({
     setRotation(Math.floor((Math.atan2(ay - ty, ax - tx) * 6) / Math.PI + 0.5));
   };
 
-  const degrees = ship
-    ? 30 * ((rotation === null ? ship.rotation : rotation) % 12)
-    : 0;
+  const degrees = ship ? 30 * ((rotation === null ? ship.rotation : rotation) % 12) : 0;
 
   return (
     <>
@@ -55,9 +54,7 @@ export default function Hex({
         onClick={onClick}
         onMouseMove={rotation === null ? undefined : rotateMouse}
       >
-        <path
-          d={`M -1 0 L -0.5 ${-halfsqrt3} L 0.5 ${-halfsqrt3} L 1 0 L 0.5 ${halfsqrt3} L -0.5 ${halfsqrt3} z`}
-        />
+        <path d={`M -1 0 L -0.5 ${-halfsqrt3} L 0.5 ${-halfsqrt3} L 1 0 L 0.5 ${halfsqrt3} L -0.5 ${halfsqrt3} z`} />
         {movement?.isBase ? (
           <path
             fill="#F44E3B"
@@ -66,11 +63,7 @@ export default function Hex({
           />
         ) : ship ? (
           <g transform={`rotate(${degrees})`}>
-            <path
-              fill={ship.color}
-              stroke="none"
-              d={`M -0.7 0 L 0.5 -0.5 L 0.2 0 L 0.5 0.5 z`}
-            />
+            <path fill={ship.color} stroke="none" d={`M -0.7 0 L 0.5 -0.5 L 0.2 0 L 0.5 0.5 z`} />
           </g>
         ) : movement ? (
           <text
@@ -83,19 +76,20 @@ export default function Hex({
           >
             {movement.acc}
           </text>
-        ) : undefined}
-        {/* ) : (
+        ) : (
+          // ) : undefined}
           <text
             x={0.07}
             dominantBaseline="middle"
             textAnchor="middle"
             stroke="none"
+            color="#61dafb99"
             fill={movement ? "orange" : undefined}
             fontSize="0.5"
           >
             {x}-{y}
           </text>
-        )} */}
+        )}
       </g>
     </>
   );

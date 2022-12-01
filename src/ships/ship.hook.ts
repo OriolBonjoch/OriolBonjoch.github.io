@@ -1,36 +1,9 @@
 import { useReducer } from "react";
-import { ActionType, ShipType, StateType } from "./ship.types";
-
-function reducer(state: StateType, action: ActionType): StateType {
-  switch (action.type) {
-    case "CREATE_SHIP":
-      const { name, ...ship } = action.payload;
-      return {
-        ships: { ...state.ships, [name]: ship },
-      };
-    case "DELETE_SHIP":
-      const { [action.payload.name]: _, ...rest } = state.ships;
-      return { ships: rest };
-    case "FREE_MOVE":
-      const oldShip = state.ships[action.payload.name];
-      return {
-        ships: {
-          ...state.ships,
-          [action.payload.name]: {
-            ...oldShip,
-            [action.payload.property]: action.payload.value,
-          },
-        },
-      };
-    case "PREPARE_MOVE": // TODO
-    case "MOVE":
-    default:
-      return state;
-  }
-}
+import { shipReducer } from "./ship.reducer";
+import { ActionType, ShipType } from "./ship.types";
 
 export function useShips() {
-  const [state, dispatch] = useReducer(reducer, { ships: {} });
+  const [state, dispatch] = useReducer(shipReducer, { ships: {} });
 
   return {
     ships: Object.keys(state.ships).map((name) => ({
@@ -48,15 +21,7 @@ export function useShips() {
     ) => {
       dispatch({
         type: "CREATE_SHIP",
-        payload: {
-          name,
-          x,
-          y,
-          color,
-          acceleration,
-          speed,
-          rotation,
-        },
+        payload: { name, x, y, color, acceleration, speed, rotation },
       } as ActionType);
     },
     deleteShip: (name: string) => {
@@ -65,7 +30,7 @@ export function useShips() {
         payload: { name },
       });
     },
-    updateShip: <T extends keyof Omit<ShipType, "name">>(
+    updateShip: <T extends keyof Omit<ShipType, "name" | "nextMove">>(
       name: string,
       property: T,
       value: ShipType[T]
@@ -75,22 +40,10 @@ export function useShips() {
         payload: { name, property, value },
       });
     },
-    prepareShip: (
-      name: string,
-      acceleration: number,
-      rotation: number,
-      x: number,
-      y: number
-    ) =>
+    prepareShip: (name: string, acceleration: number, rotation: number, vx: number, vy: number) =>
       dispatch({
         type: "PREPARE_MOVE",
-        payload: {
-          name,
-          acceleration,
-          rotation,
-          x,
-          y,
-        },
+        payload: { name, acceleration, rotation, vx, vy },
       }),
     moveShip: () => null,
   };

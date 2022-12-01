@@ -1,7 +1,7 @@
 import React, { useContext, useRef, useState } from "react";
 import CreateShipForm from "../ships/CreateShipForm";
 import { MapContext } from "./map.context";
-import Hex from "./Hex";
+import Hex, { calcCoords } from "./Hex";
 import { ShipContext } from "../ships/ship.context";
 import { useHexMap } from "./HexMap.hook";
 import { ShipType } from "../ships/ship.types";
@@ -18,24 +18,14 @@ export default function HexMap() {
 
   const clickStart = useRef<SizeType | null>(null);
   const [vp0, vp1, vp2, vp3] = viewport;
-  const {
-    shipMoves,
-    svgSize,
-    offset,
-    onMouseMove,
-    onMouseUp,
-    onHexMoveCancel,
-    onHexMoveStart,
-  } = useHexMap();
+  const { shipMoves, svgSize, offset, onMouseMove, onMouseUp, onHexMoveCancel, onHexMoveStart } = useHexMap();
 
   if (!isCreated) {
     return null;
   }
 
   const { x, y } = size;
-  const points = [...Array(x)].flatMap((_, i) =>
-    [...Array(y)].map((_, j) => ({ i, j }))
-  );
+  const points = [...Array(x)].flatMap((_, i) => [...Array(y)].map((_, j) => ({ i, j })));
 
   return (
     <>
@@ -68,13 +58,9 @@ export default function HexMap() {
                     : () => setUpdateShip(ship)
                   : pointMove && !pointMove.isBase
                   ? () => {
-                      prepareShip(
-                        pointMove.name,
-                        pointMove.acc,
-                        pointMove.rot,
-                        pointMove.x,
-                        pointMove.y
-                      );
+                      const movedShip = ships.find((s) => s.name === pointMove.name);
+                      if (!movedShip) return;
+                      prepareShip(pointMove.name, pointMove.acc, pointMove.rot, i - movedShip.x, j - movedShip.y);
                       onHexMoveCancel();
                     }
                   : () => setCreateShip({ x: i, y: j })
@@ -82,16 +68,16 @@ export default function HexMap() {
             />
           );
         })}
+        {ships.map((ship) => {
+          const [x1, y1] = calcCoords(ship.x, ship.y);
+          const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
+          const [x2, y2] = calcCoords(ship.x + vx, ship.y + vy);
+          return <line key={`line_${ship.name}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#000" strokeWidth={0.3} />;
+        })}
       </svg>
-      {createShip ? (
-        <CreateShipForm {...createShip} onClose={() => setCreateShip(null)} />
-      ) : null}
+      {createShip ? <CreateShipForm {...createShip} onClose={() => setCreateShip(null)} /> : null}
       {updateShip ? (
-        <UpdateShipForm
-          shipname={updateShip.name}
-          onClose={() => setUpdateShip(null)}
-          onMoveStart={onHexMoveStart}
-        />
+        <UpdateShipForm shipname={updateShip.name} onClose={() => setUpdateShip(null)} onMoveStart={onHexMoveStart} />
       ) : null}
     </>
   );

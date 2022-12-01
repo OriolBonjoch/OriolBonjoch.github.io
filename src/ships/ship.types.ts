@@ -1,52 +1,35 @@
-type FreeAction = {
+export type FreeAction = {
   type: "FREE_MOVE";
-  payload: {
-    name: string;
-    property: keyof Omit<ShipType, "name">;
-    value: unknown;
-  };
+  payload: { name: string; property: keyof Omit<ShipType, "name" | "nextMove">; value: unknown };
 };
 
-type PrepareMoveAction = {
+export type PrepareMoveAction = {
   type: "PREPARE_MOVE";
-  payload: {
-    name: string;
-  } & {
-    acceleration: number;
-    rotation: number;
-    x: number;
-    y: number;
-  };
+  payload: { name: string; acceleration: number; rotation: number; vx: number; vy: number };
 };
 
-type MoveAction = {
+export type MoveAction = {
   type: "MOVE";
 };
 
-type DeleteAction = {
+export type DeleteAction = {
   type: "DELETE_SHIP";
   payload: { name: string };
 };
 
-type CreateAction = {
+export type CreateAction = {
   type: "CREATE_SHIP";
-  payload: {
-    name: string;
-    x: number;
-    y: number;
-    rotation: number;
-    speed: number;
-    acceleration: number;
-    color: string;
-  };
+  payload: { name: string; x: number; y: number; rotation: number; speed: number; acceleration: number; color: string };
 };
 
-export type ActionType =
-  | FreeAction
-  | PrepareMoveAction
-  | MoveAction
-  | DeleteAction
-  | CreateAction;
+export type ActionType = FreeAction | PrepareMoveAction | MoveAction | DeleteAction | CreateAction;
+
+export type MoveType = {
+  rotation: number;
+  acceleration: number;
+  pickedMove: number;
+  moves: [number, number][];
+};
 
 export type StateType = {
   ships: Record<
@@ -58,6 +41,8 @@ export type StateType = {
       speed: number;
       acceleration: number;
       color: string;
+      nextMove: MoveType;
+      history: MoveType[];
     }
   >;
 };
@@ -70,4 +55,5 @@ export type ShipType = {
   speed: number;
   acceleration: number;
   color: string;
+  nextMove: MoveType;
 };
