@@ -9,20 +9,24 @@ import {
   StateType,
 } from "./ship.types";
 
+function defaultMovement(ship: { x: number; y: number; speed: number; rotation: number }) {
+  const moves = calculateMoves(ship.x, ship.y, ship.speed, ship.rotation);
+  return {
+    acceleration: 0,
+    rotation: ship.rotation,
+    pickedMove: 0,
+    moves,
+  };
+}
+
 function createShipReducer(state: StateType, action: CreateAction): StateType {
   const { name, ...ship } = action.payload;
-  const moves = calculateMoves(ship.x, ship.y, ship.speed, ship.rotation);
   return {
     ships: {
       ...state.ships,
       [name]: {
         ...ship,
-        nextMove: {
-          acceleration: 0,
-          rotation: ship.rotation,
-          pickedMove: 0,
-          moves,
-        },
+        nextMove: defaultMovement(ship),
         history: [],
       },
     },
@@ -36,12 +40,17 @@ function deleteShipReducer(state: StateType, action: DeleteAction) {
 
 function updateShipReduce(state: StateType, action: FreeAction) {
   const ship = state.ships[action.payload.name];
+  const newShip = {
+    ...ship,
+    [action.payload.property]: action.payload.value,
+  };
+
   return {
     ships: {
       ...state.ships,
       [action.payload.name]: {
-        ...ship,
-        [action.payload.property]: action.payload.value,
+        ...newShip,
+        nextMove: defaultMovement(newShip),
       },
     },
   };
@@ -69,6 +78,31 @@ function prepareShipReduce(state: StateType, action: PrepareMoveAction) {
   };
 }
 
+export function moveShipReduce(state: StateType) {
+  const ships = Object.entries(state.ships).reduce((acc, [name, ship]) => {
+    const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
+    const x = ship.x + vx;
+    const y = ship.y + vy;
+    const penalty = calculateRotationPenalty(ship.rotation, ship.nextMove.rotation);
+    const speed = ship.speed + ship.nextMove.acceleration - penalty;
+    const rotation = ship.nextMove.rotation;
+    const newShip = {
+      ...ship,
+      x,
+      y,
+      rotation,
+      speed,
+      nextMove: defaultMovement({ x, y, rotation, speed }),
+      history: [...ship.history, { x: ship.x, y: ship.y, rotation: ship.rotation }],
+    };
+    return {
+      ...acc,
+      [name]: newShip,
+    };
+  }, {});
+  return { ships };
+}
+
 export function shipReducer(state: StateType, action: ActionType): StateType {
   switch (action.type) {
     case "CREATE_SHIP":
@@ -80,6 +114,7 @@ export function shipReducer(state: StateType, action: ActionType): StateType {
     case "PREPARE_MOVE":
       return prepareShipReduce(state, action);
     case "MOVE":
+      return moveShipReduce(state);
     default:
       return state;
   }

@@ -2,6 +2,7 @@ import { useCallback, useContext, useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import Slider from "@mui/material/Slider";
+import PlayArrow from "@mui/icons-material/PlayArrow";
 import IconButton from "@mui/material/IconButton";
 import ZoomOutMap from "@mui/icons-material/ZoomOutMap";
 import CenterFocusStrongIcon from "@mui/icons-material/CenterFocusStrong";
@@ -24,15 +25,12 @@ type SavedPlay = {
   map: { x: number; y: number };
 };
 
-export function HexMapBar() {
-  const { zoomX, size, isCreated, createMap, changeZoom, dragToShip } =
-    useContext(MapContext);
+const usePersistence = (hideMenu: () => void) => {
+  const { size, createMap } = useContext(MapContext);
   const { ships, createShip } = useContext(ShipContext);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [anchorMenuFocus, setAnchorMenuFocus] = useState<HTMLElement>();
 
   const load = useCallback(() => {
-    setAnchorEl(null);
+    hideMenu();
     const jsonData = window.localStorage.getItem("guardado");
     if (!jsonData) return;
     const data = JSON.parse(jsonData) as SavedPlay;
@@ -41,17 +39,32 @@ export function HexMapBar() {
     data.ships.forEach((s) => {
       createShip(s.name, s.x, s.y, s.color, s.speed, 0, s.rotation);
     });
-  }, [createMap, createShip]);
+  }, [createMap, createShip, hideMenu]);
 
   const save = useCallback(() => {
-    setAnchorEl(null);
+    hideMenu();
     const data = {
       ships: ships.map(({ acceleration, ...s }) => s),
       map: size,
     };
     const jsonData = JSON.stringify(data);
     window.localStorage.setItem("guardado", jsonData);
-  }, [ships, size]);
+  }, [hideMenu, ships, size]);
+
+  return {
+    load,
+    save,
+  };
+};
+
+export function HexMapBar() {
+  const { zoomX, size, isCreated, createMap, changeZoom, dragToShip } = useContext(MapContext);
+  const { ships, moveShip } = useContext(ShipContext);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [anchorMenuFocus, setAnchorMenuFocus] = useState<HTMLElement>();
+  const hideMenu = useCallback(() => setAnchorEl(null), []);
+
+  const { save, load } = usePersistence(hideMenu);
 
   useEffect(() => {
     changeZoom(size.x);
@@ -71,6 +84,15 @@ export function HexMapBar() {
         >
           <MenuIcon />
         </IconButton>
+        <IconButton
+          size="large"
+          aria-label="focus"
+          aria-controls="menu-play"
+          aria-haspopup="true"
+          onClick={() => moveShip()}
+        >
+          <PlayArrow />
+        </IconButton>
         <Menu
           id="menu-appbar"
           anchorEl={anchorEl}
@@ -84,11 +106,11 @@ export function HexMapBar() {
             horizontal: "right",
           }}
           open={!!anchorEl}
-          onClose={() => setAnchorEl(null)}
+          onClose={() => hideMenu()}
         >
           <MenuItem
             onClick={() => {
-              setAnchorEl(null);
+              hideMenu();
               createMap();
             }}
           >
@@ -142,21 +164,14 @@ export function HexMapBar() {
                   onClose={() => setAnchorMenuFocus(undefined)}
                 >
                   {ships.map((s) => (
-                    <MenuItem
-                      key={s.name}
-                      onClick={() => dragToShip([s.x, s.y])}
-                    >
+                    <MenuItem key={s.name} onClick={() => dragToShip([s.x, s.y])}>
                       <Typography textAlign="center">{s.name}</Typography>
                     </MenuItem>
                   ))}
                 </Menu>
               </>
             ) : null}
-            <IconButton
-              size="large"
-              aria-label="zoom all"
-              onClick={() => changeZoom(size.x)}
-            >
+            <IconButton size="large" aria-label="zoom all" onClick={() => changeZoom(size.x)}>
               <ZoomOutMap />
             </IconButton>
           </>

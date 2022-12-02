@@ -71,7 +71,9 @@ const ShipFormPreview = ({
       onMouseMove={handleMouseMove}
       onClick={(_) => {
         setLock((prev) => !prev);
-        changeRotation(newRotation);
+        if (!lock && rot !== newRotation) {
+          changeRotation(newRotation);
+        }
       }}
     >
       <g>

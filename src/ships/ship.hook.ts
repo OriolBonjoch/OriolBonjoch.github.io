@@ -6,10 +6,7 @@ export function useShips() {
   const [state, dispatch] = useReducer(shipReducer, { ships: {} });
 
   return {
-    ships: Object.keys(state.ships).map((name) => ({
-      name,
-      ...state.ships[name],
-    })),
+    ships: Object.entries(state.ships).map(([name, ship]) => ({ name, ...ship })),
     createShip: (
       name: string,
       x: number,
@@ -45,6 +42,8 @@ export function useShips() {
         type: "PREPARE_MOVE",
         payload: { name, acceleration, rotation, vx, vy },
       }),
-    moveShip: () => null,
+    moveShip: () => {
+      dispatch({ type: "MOVE" });
+    },
   };
 }

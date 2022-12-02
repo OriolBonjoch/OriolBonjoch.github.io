@@ -39,6 +39,12 @@ export default function HexMap() {
         }}
         onMouseUp={onMouseUp}
       >
+        {ships.map((ship) => {
+          const [x1, y1] = calcCoords(ship.x, ship.y);
+          const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
+          const [x2, y2] = calcCoords(ship.x + vx, ship.y + vy);
+          return <line key={`line_${ship.name}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#000" strokeWidth={0.3} />;
+        })}
         {points.map(({ i, j }) => {
           const ship = ships.find((s) => s.x === i && s.y === j);
           const pointMove = shipMoves.find((m) => m.x === i && m.y === j);
@@ -67,12 +73,6 @@ export default function HexMap() {
               }
             />
           );
-        })}
-        {ships.map((ship) => {
-          const [x1, y1] = calcCoords(ship.x, ship.y);
-          const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
-          const [x2, y2] = calcCoords(ship.x + vx, ship.y + vy);
-          return <line key={`line_${ship.name}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#000" strokeWidth={0.3} />;
         })}
       </svg>
       {createShip ? <CreateShipForm {...createShip} onClose={() => setCreateShip(null)} /> : null}

@@ -24,6 +24,12 @@ export type CreateAction = {
 
 export type ActionType = FreeAction | PrepareMoveAction | MoveAction | DeleteAction | CreateAction;
 
+export type HistoryType = {
+  x: number;
+  y: number;
+  rotation: number;
+};
+
 export type MoveType = {
   rotation: number;
   acceleration: number;
@@ -42,7 +48,7 @@ export type StateType = {
       acceleration: number;
       color: string;
       nextMove: MoveType;
-      history: MoveType[];
+      history: HistoryType[];
     }
   >;
 };
