@@ -1,4 +1,4 @@
-import { calcCoords, halfsqrt3 } from "./map.helper";
+import { calcCoords } from "./map.helper";
 
 export function HexCell({
   x,
@@ -16,7 +16,7 @@ export function HexCell({
   const hexId = `hexcell_${x}_${y}`;
   return (
     <g id={hexId} className="hexcell" transform={`translate(${x0} ${y0})`}>
-      <path d={`M -1 0 L -0.5 ${-halfsqrt3} L 0.5 ${-halfsqrt3} L 1 0 L 0.5 ${halfsqrt3} L -0.5 ${halfsqrt3} z`} />
+      {/* <path d={`M -1 0 L -0.5 ${-halfsqrt3} L 0.5 ${-halfsqrt3} L 1 0 L 0.5 ${halfsqrt3} L -0.5 ${halfsqrt3} z`} /> */}
       {movement?.isBase ? (
         <path
           className="cross"

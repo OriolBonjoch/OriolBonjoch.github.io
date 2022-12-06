@@ -12,6 +12,8 @@ import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import { MapContext } from "./map/map.context";
 import { ShipContext } from "./ships/ship.context";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 
 type SavedPlay = {
   ships: {
@@ -35,7 +37,7 @@ const usePersistence = (hideMenu: () => void) => {
     if (!jsonData) return;
     const data = JSON.parse(jsonData) as SavedPlay;
 
-    createMap(`${data.map.x}`, `${data.map.y}`);
+    createMap(`${data.map.x}`);
     data.ships.forEach((s) => {
       createShip(s.name, s.x, s.y, s.color, s.speed, 0, s.rotation);
     });
@@ -58,7 +60,7 @@ const usePersistence = (hideMenu: () => void) => {
 };
 
 export function HexMapBar() {
-  const { zoomX, size, isCreated, createMap, changeZoom, dragToShip } = useContext(MapContext);
+  const { size, isCreated, createMap, changeZoom, dragToShip } = useContext(MapContext);
   const { ships, moveShip } = useContext(ShipContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [anchorMenuFocus, setAnchorMenuFocus] = useState<HTMLElement>();
@@ -71,7 +73,7 @@ export function HexMapBar() {
   }, [changeZoom, size.x]);
 
   return (
-    <AppBar position="sticky">
+    <AppBar position="fixed">
       <Toolbar>
         <IconButton
           size="large"
@@ -84,15 +86,9 @@ export function HexMapBar() {
         >
           <MenuIcon />
         </IconButton>
-        <IconButton
-          size="large"
-          aria-label="focus"
-          aria-controls="menu-play"
-          aria-haspopup="true"
-          onClick={() => moveShip()}
-        >
-          <PlayArrow />
-        </IconButton>
+        <Button startIcon={<PlayArrow />} onClick={() => moveShip()}>
+          Mover Todo
+        </Button>
         <Menu
           id="menu-appbar"
           anchorEl={anchorEl}
@@ -119,61 +115,33 @@ export function HexMapBar() {
           {isCreated ? <MenuItem onClick={save}>Guardar</MenuItem> : null}
           <MenuItem onClick={load}>Cargar</MenuItem>
         </Menu>
-        {isCreated ? (
+        {isCreated && ships.length ? (
           <>
-            {size.x > 5 ? (
-              <Slider
-                aria-label="Size"
-                sx={{ mx: 2 }}
-                value={zoomX}
-                min={3}
-                max={size.x}
-                step={1}
-                onChange={(_ev, v) => {
-                  if (typeof v === "number") {
-                    changeZoom(v);
-                  }
-                }}
-              />
-            ) : null}
-            {ships.length ? (
-              <>
-                <IconButton
-                  size="large"
-                  aria-label="focus"
-                  aria-controls="menu-focus"
-                  aria-haspopup="true"
-                  onClick={(ev) => setAnchorMenuFocus(ev.currentTarget)}
-                >
-                  <CenterFocusStrongIcon />
-                </IconButton>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-focus"
-                  anchorEl={anchorMenuFocus}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={!!anchorMenuFocus}
-                  onClose={() => setAnchorMenuFocus(undefined)}
-                >
-                  {ships.map((s) => (
-                    <MenuItem key={s.name} onClick={() => dragToShip([s.x, s.y])}>
-                      <Typography textAlign="center">{s.name}</Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </>
-            ) : null}
-            <IconButton size="large" aria-label="zoom all" onClick={() => changeZoom(size.x)}>
-              <ZoomOutMap />
-            </IconButton>
+            <Button startIcon={<CenterFocusStrongIcon />} onClick={(ev) => setAnchorMenuFocus(ev.currentTarget)}>
+              Centrar
+            </Button>
+            <Menu
+              sx={{ mt: "45px" }}
+              id="menu-focus"
+              anchorEl={anchorMenuFocus}
+              anchorOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              keepMounted
+              transformOrigin={{
+                vertical: "top",
+                horizontal: "right",
+              }}
+              open={!!anchorMenuFocus}
+              onClose={() => setAnchorMenuFocus(undefined)}
+            >
+              {ships.map((s) => (
+                <MenuItem key={s.name} onClick={() => dragToShip([s.x, s.y])}>
+                  <Typography textAlign="center">{s.name}</Typography>
+                </MenuItem>
+              ))}
+            </Menu>
           </>
         ) : null}
       </Toolbar>

@@ -1,10 +1,8 @@
-import React, { useCallback, useContext, useMemo, useRef, useState } from "react";
-import { MapContext } from "./map.context";
-import { useWindowSize } from "../utils/window-size.hook";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { ShipType } from "../ships/ship.types";
 import { calculateAllMoves } from "../utils/move.hook";
+import { MapContext, MoveKind } from "./map.context";
 
-type SizeType = { x: number; y: number };
 type MoveType = {
   x: number;
   y: number;
@@ -20,25 +18,37 @@ type MoveType = {
     }
 );
 
-const bound = (value: number, min: number, max: number) => (value < min ? min : value > max ? max : value);
+export const useMapMovement = function () {
+  const { dragTo } = useContext(MapContext);
+
+  const keyPressed = useCallback(
+    ({ key }: KeyboardEvent) => {
+      const movement = {
+        ArrowLeft: "Left",
+        ArrowRight: "Right",
+        ArrowUp: "Up",
+        ArrowDown: "Down",
+        "-": "ZoomOut",
+        "+": "ZoomIn",
+      }[key];
+
+      console.log("movement", movement, key);
+      dragTo((movement as MoveKind) ?? undefined);
+    },
+    [dragTo]
+  );
+
+  useEffect(() => {
+    window.addEventListener("keydown", keyPressed);
+
+    return () => {
+      window.removeEventListener("keydown", keyPressed);
+    };
+  }, [keyPressed]);
+};
 
 export const useHexMap = function () {
-  const { viewport, dragBox, dragTo } = useContext(MapContext);
   const [shipMoves, setShipMoves] = useState<MoveType[]>([]);
-
-  const clickStart = useRef<SizeType | null>(null);
-  const [offset, setOffset] = useState<[number, number]>([0, 0]);
-  const { ratio, width } = useWindowSize();
-  const [vp0, vp1, vp2] = viewport;
-
-  const rate = vp2 / width;
-  const svgSize = useMemo(
-    () => ({
-      width: "100vw",
-      height: `calc(${Math.floor(100 * ratio)}vw - 64px)`,
-    }),
-    [ratio]
-  );
 
   const onHexMoveStart = useCallback((ship: ShipType) => {
     const moves: MoveType[] = [
@@ -58,34 +68,9 @@ export const useHexMap = function () {
     setShipMoves(moves);
   }, []);
 
-  const onMouseMove = useCallback(
-    (ev: React.MouseEvent<SVGElement>) => {
-      if (clickStart.current) {
-        setOffset([
-          bound(vp0 + (clickStart.current.x - ev.clientX) * rate, dragBox.minX, dragBox.maxX) - vp0,
-          bound(vp1 + (clickStart.current.y - ev.clientY) * rate, dragBox.minY, dragBox.maxY) - vp1,
-        ]);
-      }
-    },
-    [dragBox.maxX, dragBox.maxY, dragBox.minX, dragBox.minY, rate, vp0, vp1]
-  );
-
-  const onMouseUp = useCallback(
-    (ev: React.MouseEvent<SVGElement>) => {
-      dragTo(offset);
-      setOffset([0, 0]);
-      clickStart.current = null;
-    },
-    [dragTo, offset]
-  );
-
   return {
     shipMoves,
-    svgSize,
-    offset,
     onHexMoveStart,
     onHexMoveCancel: () => setShipMoves([]),
-    onMouseMove,
-    onMouseUp,
   };
 };

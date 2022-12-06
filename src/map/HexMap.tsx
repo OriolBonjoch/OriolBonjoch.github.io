@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useRef, useState } from "react";
+import { Fragment, useContext, useState } from "react";
 import CreateShipForm from "../ships/CreateShipForm";
 import { MapContext } from "./map.context";
 import { HexShip } from "./HexShip";
@@ -6,7 +6,7 @@ import { calcCoords } from "./map.helper";
 import { HexCell } from "./HexCell";
 import { HexButton } from "./HexButton";
 import { ShipContext } from "../ships/ship.context";
-import { useHexMap } from "./HexMap.hook";
+import { useHexMap, useMapMovement } from "./HexMap.hook";
 import { ShipType } from "../ships/ship.types";
 import UpdateShipForm from "../ships/UpdateShipForm";
 import "./HexMap.css";
@@ -14,25 +14,20 @@ import "./HexMap.css";
 type SizeType = { x: number; y: number };
 
 export default function HexMap() {
-  const { size, isCreated, viewport } = useContext(MapContext);
+  const { size, viewport } = useContext(MapContext);
   const { ships, prepareShip } = useContext(ShipContext);
   const [createShip, setCreateShip] = useState<SizeType | null>(null);
   const [updateShip, setUpdateShip] = useState<ShipType | null>(null);
 
-  const clickStart = useRef<SizeType | null>(null);
   const [vp0, vp1, vp2, vp3] = viewport;
-  const { shipMoves, svgSize, offset, onMouseMove, onMouseUp, onHexMoveCancel, onHexMoveStart } = useHexMap();
+  const { shipMoves, onHexMoveCancel, onHexMoveStart } = useHexMap();
+  useMapMovement();
 
-  if (!isCreated) {
-    return null;
-  }
+  const points = [...Array(size.x + 1)].flatMap((_, i) => [...Array(size.y)].map((_, j) => ({ i, j })));
 
-  const { x, y } = size;
-  const points = [...Array(x)].flatMap((_, i) => [...Array(y)].map((_, j) => ({ i, j })));
-
-  const onCellClicked = (i: number, j: number) => {
-    const ship = ships.find((s) => s.x === i && s.y === j);
-    const pointMove = shipMoves.find((m) => m.x === i && m.y === j);
+  const onCellClicked = (x: number, y: number) => {
+    const ship = ships.find((s) => s.x === x && s.y === y);
+    const pointMove = shipMoves.find((m) => m.x === x && m.y === y);
     if (ship) {
       if (pointMove?.isBase) onHexMoveCancel();
       else setUpdateShip(ship);
@@ -41,25 +36,22 @@ export default function HexMap() {
     if (pointMove && !pointMove.isBase) {
       const movedShip = ships.find((s) => s.name === pointMove.name);
       if (!movedShip) return;
-      prepareShip(pointMove.name, pointMove.acc, pointMove.rot, i - movedShip.x, j - movedShip.y);
+      prepareShip(pointMove.name, pointMove.acc, pointMove.rot, x - movedShip.x, y - movedShip.y);
       onHexMoveCancel();
     } else {
-      setCreateShip({ x: i, y: j });
+      setCreateShip({ x, y });
     }
   };
 
   return (
     <>
-      <svg
-        viewBox={`${vp0 + offset[0]} ${vp1 + offset[1]} ${vp2} ${vp3}`}
-        className="hex-map"
-        style={svgSize}
-        onMouseMove={onMouseMove}
-        onMouseDown={(ev) => {
-          clickStart.current = { x: ev.clientX, y: ev.clientY };
-        }}
-        onMouseUp={onMouseUp}
-      >
+      <svg viewBox={`${vp0} ${vp1} ${vp2} ${vp3}`} className="hexmap">
+        <defs>
+          <pattern id="hexpattern" y="-0.866" width="3" height="1.732" patternUnits="userSpaceOnUse">
+            <path d="M -1 0.866 L -0.5 0 L 0.5 0 L 1 0.866 L 0.5 1.732 L -0.5 1.732 z M 0.5 1.732 L 1 0.866 L 2 0.866 L 2.5 1.732 L 2 2.598 L 1 2.598 z M 0.5 0 L 1 -0.866 L 2 -0.866 L 2.5 0 L 2 0.866 L 1 0.866 z M 2 0.866 L 2.5 0 L 3.5 0 L 4 0.866 L 3.5 1.732 L 2.5 1.732 z" />
+          </pattern>
+        </defs>
+        <rect x="-100%" y="-100%" width="300%" height="300%" fill="url(#hexpattern)" stroke="none" />
         {points.map(({ i, j }) => {
           const pointMove = shipMoves.find((m) => m.x === i && m.y === j);
           return <HexCell key={`${i}_${j}`} x={i} y={j} movement={pointMove} />;
@@ -77,7 +69,7 @@ export default function HexMap() {
           );
         })}
         {points.map(({ i, j }) => (
-          <HexButton x={i} y={j} onClick={() => onCellClicked(i, j)} />
+          <HexButton key={`${i}_${j}`} x={i} y={j} onClick={() => onCellClicked(i, j)} />
         ))}
       </svg>
       {createShip ? <CreateShipForm {...createShip} onClose={() => setCreateShip(null)} /> : null}

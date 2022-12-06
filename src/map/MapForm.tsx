@@ -11,30 +11,14 @@ export default function MapForm() {
   const heightInput = useRef<HTMLInputElement>(null);
 
   return (
-    <Box
-      component="form"
-      noValidate
-      className="map-form-container"
-      autoComplete="off"
-      sx={{ "&>*": { m: 1 } }}
-    >
-      <TextField
-        label="Ancho del mapa"
-        type="number"
-        inputRef={widthInput}
-        defaultValue={size.x}
-      />
-      <TextField
-        label="Alto del mapa"
-        type="number"
-        inputRef={heightInput}
-        defaultValue={size.y}
-      />
+    <Box component="form" noValidate className="map-form-container" autoComplete="off" sx={{ "&>*": { m: 1 } }}>
+      <TextField label="Ancho del mapa" type="number" inputRef={widthInput} defaultValue={size.x} />
+      <TextField label="Alto del mapa" type="number" inputRef={heightInput} defaultValue={size.y} />
       <Button
         variant="contained"
         onClick={() => {
           ships.forEach((s) => deleteShip(s.name));
-          createMap(widthInput.current?.value, heightInput.current?.value);
+          createMap(widthInput.current?.value);
         }}
       >
         Crear

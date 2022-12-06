@@ -1,16 +1,20 @@
-.hex-map {
+.hexmap {
   fill: #282c3435;
   stroke: #61DAFB;
   stroke-width: 0.03px;
 }
 
 .hexbutton {
-  fill: #61dafb00;
+  fill: #61dafb33;
   stroke: none;
 }
 
 .hexbutton:hover {
   fill: #61dafb99;
+}
+
+.hexcell {
+  fill: none;
 }
 
 .hexcell .cross {

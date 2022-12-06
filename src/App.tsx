@@ -5,7 +5,6 @@ import { MapContext, useMap } from "./map/map.context";
 import { ShipContext } from "./ships/ship.context";
 import { useShips } from "./ships/ship.hook";
 import { HexMapBar } from "./HexMapBar";
-import "./App.css";
 
 const darkTheme = createTheme({
   palette: {
@@ -22,7 +21,7 @@ function App() {
       <MapContext.Provider value={map}>
         <ShipContext.Provider value={ships}>
           <HexMapBar />
-          <div className="App">{map.isCreated ? <HexMap /> : <MapForm />}</div>
+          {map.isCreated ? <HexMap /> : <MapForm />}
         </ShipContext.Provider>
       </MapContext.Provider>
     </ThemeProvider>
