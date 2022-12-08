@@ -1,4 +1,6 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { useSpring } from "react-spring";
+
 import { ShipType } from "../ships/ship.types";
 import { calculateAllMoves } from "../utils/move.hook";
 import { MapContext, MoveKind } from "./map.context";
@@ -19,7 +21,10 @@ type MoveType = {
 );
 
 export const useMapMovement = function () {
-  const { dragTo } = useContext(MapContext);
+  const { dragTo, viewport, size, center } = useContext(MapContext);
+  const [vp0, vp1, vp2, vp3] = viewport;
+  const stringViewport = `${vp0} ${vp1} ${vp2} ${vp3}`;
+  const { viewBox } = useSpring({ to: { viewBox: stringViewport }, loop: false });
 
   const keyPressed = useCallback(
     ({ key }: KeyboardEvent) => {
@@ -32,11 +37,17 @@ export const useMapMovement = function () {
         "+": "ZoomIn",
       }[key];
 
-      console.log("movement", movement, key);
       dragTo((movement as MoveKind) ?? undefined);
     },
     [dragTo]
   );
+
+  const buttonPoints = useMemo(() => {
+    console.log(center, size);
+    const minX = Math.floor(center.x - size.x / 2);
+    const minY = Math.floor(center.y - size.y / 2);
+    return [...Array(size.x + 1)].flatMap((_, i) => [...Array(size.y)].map((_, j) => ({ i: i + minX, j: j + minY })));
+  }, [size, center]);
 
   useEffect(() => {
     window.addEventListener("keydown", keyPressed);
@@ -45,6 +56,11 @@ export const useMapMovement = function () {
       window.removeEventListener("keydown", keyPressed);
     };
   }, [keyPressed]);
+
+  return {
+    buttonPoints,
+    viewBox,
+  } as const;
 };
 
 export const useHexMap = function () {

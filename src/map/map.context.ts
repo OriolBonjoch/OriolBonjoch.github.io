@@ -73,6 +73,7 @@ export function useMap() {
   return {
     size,
     isCreated,
+    center,
     viewport: [...minCoords, ...viewportSize],
     createMap,
     changeZoom,
@@ -84,6 +85,7 @@ export function useMap() {
 export const MapContext = createContext<ReturnType<typeof useMap>>({
   isCreated: true,
   viewport: [0, 0, 1, 1],
+  center: { x: 10, y: 5 },
   size: { x: 20, y: 10 },
   createMap: () => null,
   changeZoom: () => null,

@@ -1,19 +1,16 @@
 import { useCallback, useContext, useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
-import Slider from "@mui/material/Slider";
 import PlayArrow from "@mui/icons-material/PlayArrow";
 import IconButton from "@mui/material/IconButton";
-import ZoomOutMap from "@mui/icons-material/ZoomOutMap";
 import CenterFocusStrongIcon from "@mui/icons-material/CenterFocusStrong";
 import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
+import Button from "@mui/material/Button";
 import { MapContext } from "./map/map.context";
 import { ShipContext } from "./ships/ship.context";
-import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
 
 type SavedPlay = {
   ships: {
@@ -86,9 +83,6 @@ export function HexMapBar() {
         >
           <MenuIcon />
         </IconButton>
-        <Button startIcon={<PlayArrow />} onClick={() => moveShip()}>
-          Mover Todo
-        </Button>
         <Menu
           id="menu-appbar"
           anchorEl={anchorEl}
@@ -117,6 +111,9 @@ export function HexMapBar() {
         </Menu>
         {isCreated && ships.length ? (
           <>
+            <Button startIcon={<PlayArrow />} onClick={() => moveShip()}>
+              Mover Todo
+            </Button>
             <Button startIcon={<CenterFocusStrongIcon />} onClick={(ev) => setAnchorMenuFocus(ev.currentTarget)}>
               Centrar
             </Button>

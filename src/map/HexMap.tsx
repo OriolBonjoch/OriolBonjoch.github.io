@@ -1,6 +1,5 @@
 import { Fragment, useContext, useState } from "react";
 import CreateShipForm from "../ships/CreateShipForm";
-import { MapContext } from "./map.context";
 import { HexShip } from "./HexShip";
 import { calcCoords } from "./map.helper";
 import { HexCell } from "./HexCell";
@@ -10,20 +9,19 @@ import { useHexMap, useMapMovement } from "./HexMap.hook";
 import { ShipType } from "../ships/ship.types";
 import UpdateShipForm from "../ships/UpdateShipForm";
 import "./HexMap.css";
+import { animated } from "react-spring";
 
 type SizeType = { x: number; y: number };
 
 export default function HexMap() {
-  const { size, viewport } = useContext(MapContext);
   const { ships, prepareShip } = useContext(ShipContext);
   const [createShip, setCreateShip] = useState<SizeType | null>(null);
   const [updateShip, setUpdateShip] = useState<ShipType | null>(null);
 
-  const [vp0, vp1, vp2, vp3] = viewport;
   const { shipMoves, onHexMoveCancel, onHexMoveStart } = useHexMap();
-  useMapMovement();
+  const { buttonPoints, viewBox } = useMapMovement();
 
-  const points = [...Array(size.x + 1)].flatMap((_, i) => [...Array(size.y)].map((_, j) => ({ i, j })));
+  // const points = [...Array(size.x + 1)].flatMap((_, i) => [...Array(size.y)].map((_, j) => ({ i, j })));
 
   const onCellClicked = (x: number, y: number) => {
     const ship = ships.find((s) => s.x === x && s.y === y);
@@ -31,6 +29,7 @@ export default function HexMap() {
     if (ship) {
       if (pointMove?.isBase) onHexMoveCancel();
       else setUpdateShip(ship);
+      return;
     }
 
     if (pointMove && !pointMove.isBase) {
@@ -45,15 +44,16 @@ export default function HexMap() {
 
   return (
     <>
-      <svg viewBox={`${vp0} ${vp1} ${vp2} ${vp3}`} className="hexmap">
+      <animated.svg viewBox={viewBox} className="hexmap">
         <defs>
           <pattern id="hexpattern" y="-0.866" width="3" height="1.732" patternUnits="userSpaceOnUse">
             <path d="M -1 0.866 L -0.5 0 L 0.5 0 L 1 0.866 L 0.5 1.732 L -0.5 1.732 z M 0.5 1.732 L 1 0.866 L 2 0.866 L 2.5 1.732 L 2 2.598 L 1 2.598 z M 0.5 0 L 1 -0.866 L 2 -0.866 L 2.5 0 L 2 0.866 L 1 0.866 z M 2 0.866 L 2.5 0 L 3.5 0 L 4 0.866 L 3.5 1.732 L 2.5 1.732 z" />
           </pattern>
         </defs>
         <rect x="-100%" y="-100%" width="300%" height="300%" fill="url(#hexpattern)" stroke="none" />
-        {points.map(({ i, j }) => {
-          const pointMove = shipMoves.find((m) => m.x === i && m.y === j);
+        {shipMoves.map((pointMove) => {
+          const i = pointMove.x;
+          const j = pointMove.y;
           return <HexCell key={`${i}_${j}`} x={i} y={j} movement={pointMove} />;
         })}
         {ships.map((ship) => {
@@ -68,10 +68,10 @@ export default function HexMap() {
             </Fragment>
           );
         })}
-        {points.map(({ i, j }) => (
+        {buttonPoints.map(({ i, j }) => (
           <HexButton key={`${i}_${j}`} x={i} y={j} onClick={() => onCellClicked(i, j)} />
         ))}
-      </svg>
+      </animated.svg>
       {createShip ? <CreateShipForm {...createShip} onClose={() => setCreateShip(null)} /> : null}
       {updateShip ? (
         <UpdateShipForm shipname={updateShip.name} onClose={() => setUpdateShip(null)} onMoveStart={onHexMoveStart} />
