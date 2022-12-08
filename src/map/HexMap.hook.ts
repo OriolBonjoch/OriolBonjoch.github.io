@@ -43,7 +43,6 @@ export const useMapMovement = function () {
   );
 
   const buttonPoints = useMemo(() => {
-    console.log(center, size);
     const minX = Math.floor(center.x - size.x / 2);
     const minY = Math.floor(center.y - size.y / 2);
     return [...Array(size.x + 1)].flatMap((_, i) => [...Array(size.y)].map((_, j) => ({ i: i + minX, j: j + minY })));

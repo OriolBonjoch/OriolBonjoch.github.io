@@ -21,8 +21,6 @@ export default function HexMap() {
   const { shipMoves, onHexMoveCancel, onHexMoveStart } = useHexMap();
   const { buttonPoints, viewBox } = useMapMovement();
 
-  // const points = [...Array(size.x + 1)].flatMap((_, i) => [...Array(size.y)].map((_, j) => ({ i, j })));
-
   const onCellClicked = (x: number, y: number) => {
     const ship = ships.find((s) => s.x === x && s.y === y);
     const pointMove = shipMoves.find((m) => m.x === x && m.y === y);
