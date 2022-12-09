@@ -28,6 +28,7 @@ export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: (
       <ShipFormPreview
         rot={rotation}
         color={ship.color}
+        texture={ship.color === "#" ? undefined : ship.color}
         changeRotation={(r) => {
           setRotation(r);
           updateNextMove(acceleration, r);

@@ -102,6 +102,7 @@ export default function UpdateShipForm(props: {
             <ShipFormPreview
               rot={ship.rotation}
               color={ship.color}
+              texture={ship.color === "#" ? undefined : ship.color}
               changeRotation={(r) => updateShip(shipname, "rotation", r)}
             />
             <TextField

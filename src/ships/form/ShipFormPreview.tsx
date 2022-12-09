@@ -7,8 +7,10 @@ export const ShipFormPreview = ({
   rot,
   changeRotation,
   color,
+  texture,
 }: {
   color: string;
+  texture?: string;
   rot: number;
   changeRotation: (rot: number) => void;
 }) => {
@@ -45,7 +47,7 @@ export const ShipFormPreview = ({
       <g>
         <path d={hexPath} fill="#c0c0c0" />
         <g transform={lock ? "" : "scale(0.5 0.5)"}>
-          <Ship x={0} y={0} rot={lock ? rot : newRotation} color={color} />
+          <Ship x={0} y={0} rot={lock ? rot : newRotation} color={color} texture={texture} />
         </g>
       </g>
     </svg>

@@ -4,14 +4,16 @@ import { ShipContext } from "../ship.context";
 import Circle from "@uiw/react-color-circle";
 import { ShipFormPreview } from "./ShipFormPreview";
 import "./CreateShipForm.css";
+import { ShipSelector } from "./ShipSelector";
 
 export default function CreateShipForm(props: { x: number; y: number; onClose: () => void }) {
   const { x, y, onClose } = props;
   const [rot, setRot] = useState(0);
   const [speed, setSpeed] = useState(0);
+  const [selectedShip, setSelectedShip] = useState<string>();
   const [acceleration, setAcceleration] = useState(2);
   const [name, setName] = useState(`Nave #${Math.floor(Math.random() * 1000)}`);
-  const [hex, setHex] = useState("#F44E3B");
+  const [color, setColor] = useState("#F44E3B");
   const { createShip } = useContext(ShipContext);
 
   return (
@@ -26,13 +28,21 @@ export default function CreateShipForm(props: { x: number; y: number; onClose: (
       }}
     >
       <Box component="form" noValidate className="ship-form-container" autoComplete="off" sx={{ "&>*": { m: 1 } }}>
-        <ShipFormPreview rot={rot} color={hex} changeRotation={(r) => setRot(r)} />
+        <ShipFormPreview rot={rot} color={color} texture={selectedShip} changeRotation={(r) => setRot(r)} />
         <TextField label="Alias de la nave" type="text" value={name} onChange={(ev) => setName(ev.target.value)} />
         <Circle
           colors={["#F44E3B", "#FE9200", "#FCDC00", "#B80000", "#5300EB"]}
-          color={hex}
-          onChange={(color) => setHex(color.hex)}
+          color={color}
+          onChange={(color) => setColor(color.hex)}
         />
+        <Box component="div" className="MuiMasonry-parent">
+          <ShipSelector
+            selectShip={(key) => {
+              setSelectedShip((prev) => (prev === key ? undefined : key));
+            }}
+            selectedShip={selectedShip}
+          />
+        </Box>
         <TextField
           label="Acceleración máxima"
           type="number"
@@ -48,7 +58,7 @@ export default function CreateShipForm(props: { x: number; y: number; onClose: (
         <Button
           variant="contained"
           onClick={() => {
-            createShip(name, x, y, hex, speed, (acceleration + 12) % 12, rot);
+            createShip(name, x, y, selectedShip ? selectedShip : color, speed, (acceleration + 12) % 12, rot);
             onClose();
           }}
         >
