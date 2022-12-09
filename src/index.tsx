@@ -11,8 +11,25 @@ import reportWebVitals from "./reportWebVitals";
 import "./index.css";
 import { ConfigurationProvider } from "./utils/config.context";
 
+declare module "@mui/material/styles" {
+  interface Palette {
+    hexColor: Palette["primary"];
+    hexStroke: Palette["primary"];
+  }
+  interface PaletteOptions {
+    hexColor: PaletteOptions["primary"];
+    hexStroke: PaletteOptions["primary"];
+  }
+}
+
 const theme = createTheme({
   palette: {
+    hexColor: {
+      main: "#ffffff",
+    },
+    hexStroke: {
+      main: "#ffffff",
+    },
     mode: "dark",
   },
 });

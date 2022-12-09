@@ -8,7 +8,7 @@ import { ShipContext } from "../ships/ship.context";
 import { useHexMap } from "./hex-map.hook";
 import { useMapMovement } from "./hex-move.hook";
 import { ShipType } from "../ships/ship.types";
-import UpdateShipForm from "../ships/UpdateShipForm";
+import UpdateShipForm from "../ships/update-form/UpdateShipForm";
 import { animated } from "react-spring";
 import "./HexMap.css";
 
@@ -67,9 +67,13 @@ export default function HexMap() {
           const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
           const [x2, y2] = calcCoords(ship.x + vx, ship.y + vy);
           const pointMove = shipMoves.find((m) => m.x === ship.x && m.y === ship.y);
+          const moveToDegrees = ship ? 30 * (ship.nextMove.rotation % 12) : 0;
           return pointMove?.isBase ? null : (
             <Fragment key={ship.name}>
-              <line key={`line_${ship.name}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#000" strokeWidth={0.3} />
+              <g transform={`translate(${x2} ${y2}) rotate(${moveToDegrees})`}>
+                <path fill="#999999" stroke="none" d={`M -0.7 0 L 0.5 -0.5 L 0.2 0 L 0.5 0.5 z`} />
+              </g>
+              <line key={`line_${ship.name}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#999999" strokeWidth={0.2} />
               <HexShip ship={ship} />
             </Fragment>
           );
