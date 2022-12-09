@@ -5,11 +5,12 @@ import { calcCoords } from "./map.helper";
 import { HexCell } from "./HexCell";
 import { HexButton } from "./HexButton";
 import { ShipContext } from "../ships/ship.context";
-import { useHexMap, useMapMovement } from "./HexMap.hook";
+import { useHexMap } from "./hex-map.hook";
+import { useMapMovement } from "./hex-move.hook";
 import { ShipType } from "../ships/ship.types";
 import UpdateShipForm from "../ships/UpdateShipForm";
-import "./HexMap.css";
 import { animated } from "react-spring";
+import "./HexMap.css";
 
 type SizeType = { x: number; y: number };
 
@@ -19,7 +20,7 @@ export default function HexMap() {
   const [updateShip, setUpdateShip] = useState<ShipType | null>(null);
 
   const { shipMoves, onHexMoveCancel, onHexMoveStart } = useHexMap();
-  const { buttonPoints, viewBox } = useMapMovement();
+  const { buttonPoints, viewport, animatedViewBox } = useMapMovement();
 
   const onCellClicked = (x: number, y: number) => {
     const ship = ships.find((s) => s.x === x && s.y === y);
@@ -42,13 +43,20 @@ export default function HexMap() {
 
   return (
     <>
-      <animated.svg viewBox={viewBox} className="hexmap">
+      <animated.svg viewBox={animatedViewBox} className="hexmap">
         <defs>
           <pattern id="hexpattern" y="-0.866" width="3" height="1.732" patternUnits="userSpaceOnUse">
             <path d="M -1 0.866 L -0.5 0 L 0.5 0 L 1 0.866 L 0.5 1.732 L -0.5 1.732 z M 0.5 1.732 L 1 0.866 L 2 0.866 L 2.5 1.732 L 2 2.598 L 1 2.598 z M 0.5 0 L 1 -0.866 L 2 -0.866 L 2.5 0 L 2 0.866 L 1 0.866 z M 2 0.866 L 2.5 0 L 3.5 0 L 4 0.866 L 3.5 1.732 L 2.5 1.732 z" />
           </pattern>
         </defs>
-        <rect x="-100%" y="-100%" width="300%" height="300%" fill="url(#hexpattern)" stroke="none" />
+        <rect
+          x={viewport[0] - 3}
+          y={viewport[1] - 1.732}
+          width={viewport[2] + 6}
+          height={viewport[3] + 3.464}
+          fill="url(#hexpattern)"
+          stroke="none"
+        />
         {shipMoves.map((pointMove) => {
           const i = pointMove.x;
           const j = pointMove.y;

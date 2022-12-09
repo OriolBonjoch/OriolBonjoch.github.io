@@ -54,8 +54,8 @@ export function useMap() {
         Up: () => setCenter((prev) => ({ x: prev.x, y: prev.y - 1 })),
         Left: () => setCenter((prev) => ({ x: prev.x - 1, y: prev.y })),
         Right: () => setCenter((prev) => ({ x: prev.x + 1, y: prev.y })),
-        ZoomIn: () => setSize((prev) => ({ x: prev.x - 1, y: Math.ceil((prev.x - 1) * ratio) })),
-        ZoomOut: () => setSize((prev) => ({ x: prev.x + 1, y: Math.ceil((prev.x + 1) * ratio) })),
+        ZoomIn: () => setSize((prev) => (prev.x > 5 ? { x: prev.x - 2, y: Math.ceil((prev.x - 2) * ratio) } : prev)),
+        ZoomOut: () => setSize((prev) => ({ x: prev.x + 2, y: Math.ceil((prev.x + 2) * ratio) })),
       };
       action[movement]();
     },

@@ -11,6 +11,10 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import { MapContext } from "./map/map.context";
 import { ShipContext } from "./ships/ship.context";
+import { Globals } from "react-spring";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Switch from "@mui/material/Switch";
+import Box from "@mui/material/Box";
 
 type SavedPlay = {
   ships: {
@@ -56,12 +60,13 @@ const usePersistence = (hideMenu: () => void) => {
   };
 };
 
-export function HexMapBar() {
+export default function ApplicationBar() {
   const { size, isCreated, createMap, changeZoom, dragToShip } = useContext(MapContext);
   const { ships, moveShip } = useContext(ShipContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [anchorMenuFocus, setAnchorMenuFocus] = useState<HTMLElement>();
   const hideMenu = useCallback(() => setAnchorEl(null), []);
+  const [animated, setAnimated] = useState(!Globals.skipAnimation);
 
   const { save, load } = usePersistence(hideMenu);
 
@@ -141,6 +146,20 @@ export function HexMapBar() {
             </Menu>
           </>
         ) : null}
+        <Box sx={{ flexGrow: 1 }} />
+        <FormControlLabel
+          control={
+            <Switch
+              checked={animated}
+              onChange={(ev) => {
+                setAnimated(ev.target.checked);
+                Globals.assign({ skipAnimation: !ev.target.checked });
+              }}
+            />
+          }
+          labelPlacement="start"
+          label="Animar"
+        />
       </Toolbar>
     </AppBar>
   );

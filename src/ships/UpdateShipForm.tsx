@@ -22,7 +22,7 @@ const SvgHex = ({ letter, up, rotation }: { letter: string; up?: boolean; rotati
   const tor = rotation ? ` rotate(${-rotation})` : "";
   return (
     <g>
-      <path d={hexPath} transform={rot + trans} stroke="black" strokeWidth={0.1} fill="none"></path>
+      <path d={hexPath} transform={rot + trans} stroke="black" strokeWidth={0.05} fill="none"></path>
       <text
         x={0}
         transform={rot + trans + tor}
@@ -192,9 +192,9 @@ export default function UpdateShipForm(props: {
               <SvgHex letter="W" up />
               <SvgHex letter="E" up rotation={60} />
               <path d={hexPath} />
-              <SvgHex letter="A" rotation={-60} />
+              <SvgHex letter="A" rotation={60} />
               <SvgHex letter="S" />
-              <SvgHex letter="D" rotation={60} />
+              <SvgHex letter="D" rotation={-60} />
             </svg>
             <Button
               color="error"
