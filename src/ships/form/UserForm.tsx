@@ -3,8 +3,9 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import { ShipContext } from "../ship.context";
 import { ShipType } from "../ship.types";
-import { calculateMoves, calculateRotationPenalty } from "../../utils/move.hook";
+import { calculateMoves, calculateSpeed } from "../../utils/move.hook";
 import { ShipFormPreview } from "./ShipFormPreview";
+import { SwitchMovement } from "./SwitchMovement";
 
 export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: () => void }) => {
   const [acceleration, setAcceleration] = useState(ship.nextMove.acceleration || 0);
@@ -12,13 +13,11 @@ export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: (
   const [rotation, setRotation] = useState(ship.nextMove.rotation);
   const { prepareShip } = useContext(ShipContext);
 
-  const penalty = calculateRotationPenalty(ship.rotation, rotation);
-  const speed = ship.speed + acceleration - penalty;
+  const speed = calculateSpeed(ship.speed, acceleration, ship.rotation, rotation);
   const moves = calculateMoves(ship.x, ship.y, speed, rotation);
 
   function updateNextMove(acc: number, rot: number, p: number = 0) {
-    const penalty = calculateRotationPenalty(ship.rotation, rot);
-    const speed = ship.speed + acc - penalty;
+    const speed = calculateSpeed(ship.speed, acc, ship.rotation, rot);
     if (!moves.length && speed <= 0) return;
     const [vx, vy] = moves[p];
     prepareShip(ship.name, acc, rot, vx, vy);
@@ -53,15 +52,13 @@ export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: (
       />
       <TextField label="Velocidad" value={speed === ship.speed ? speed : `${ship.speed} => ${speed}`} disabled />
       {moves.length > 1 ? (
-        <Button
-          variant="outlined"
+        <SwitchMovement
+          flipped={pickedMove % 2 === 0}
           onClick={() => {
             setPickedMove((prev) => ++prev % moves.length);
             updateNextMove(acceleration, rotation, pickedMove);
           }}
-        >
-          Cambiar Movimiento
-        </Button>
+        />
       ) : null}
       <Button variant="outlined" onClick={onMoveStart}>
         Mover en mapa

@@ -1,4 +1,4 @@
-import { calculateMoves, calculateRotationPenalty } from "../utils/move.hook";
+import { calculateMoves, calculateSpeed } from "../utils/move.hook";
 import {
   ActionType,
   CreateAction,
@@ -59,8 +59,12 @@ function updateShipReduce(state: StateType, action: FreeAction) {
 function prepareShipReduce(state: StateType, action: PrepareMoveAction) {
   const ship = state.ships[action.payload.name];
   const { acceleration, rotation, vx, vy } = action.payload;
-  const penalty = calculateRotationPenalty(ship.rotation, rotation);
-  const moves = calculateMoves(ship.x, ship.y, ship.speed + acceleration - penalty, rotation);
+  const moves = calculateMoves(
+    ship.x,
+    ship.y,
+    calculateSpeed(ship.speed, acceleration, ship.rotation, rotation),
+    rotation
+  );
   const pickedMove = moves.findIndex(([x, y]) => x === vx && y === vy);
   return {
     ships: {
@@ -83,8 +87,7 @@ export function moveShipReduce(state: StateType) {
     const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
     const x = ship.x + vx;
     const y = ship.y + vy;
-    const penalty = calculateRotationPenalty(ship.rotation, ship.nextMove.rotation);
-    const speed = ship.speed + ship.nextMove.acceleration - penalty;
+    const speed = calculateSpeed(ship.speed, ship.nextMove.acceleration, ship.rotation, ship.nextMove.rotation);
     const rotation = ship.nextMove.rotation;
     const newShip = {
       ...ship,

@@ -66,8 +66,10 @@ export function calculateMoves(x: number, y: number, speed: number, rotation: nu
   return speed % 2 ? calcNextPoint((x + vx) % 2 === 1, vx, vy, rotation) : [[vx, vy]];
 }
 
-export const calculateRotationPenalty = (shipRot: number, newRot: number) => {
-  return [0, 1, 1, 2, 2, 3, 4, 3, 2, 2, 1, 1, 0][Math.abs(shipRot - newRot) % 12];
+export const calculateSpeed = (speed: number, acceleration: number, shipRot: number, newRot: number): number => {
+  const penalty = [0, 1, 1, 2, 2, 3, 4, 3, 2, 2, 1, 1, 0][Math.abs(shipRot - newRot) % 12];
+  const newSpeed = speed + acceleration - penalty;
+  return newSpeed < 0 ? 0 : newSpeed;
 };
 
 type MoveType = {
@@ -82,8 +84,7 @@ export function calculateAllMoves(x: number, y: number, speed: number, accelerat
   const allMoves = [...Array(12)].flatMap((_, newRotation) => {
     const moves: MoveType[] = [];
     for (let acc = -acceleration; acc <= acceleration; acc++) {
-      const penalty = calculateRotationPenalty(rotation, newRotation);
-      const v = speed + acc - penalty;
+      const v = calculateSpeed(speed, acc, rotation, newRotation);
       if (v <= 0) continue;
       moves.push(
         ...calculateMoves(x, y, v, newRotation).map(([vx, vy]) => ({

@@ -1,6 +1,6 @@
 const hexPath = "M -1 0 L -0.5 -0.866 L 0.5 -0.866 L 1 0 L 0.5 0.866 L -0.5 0.866 z";
 
-const SvgHex = ({ letter, up, rotation }: { letter: string; up?: boolean; rotation?: number }) => {
+const SvgHexLetter = ({ letter, up, rotation }: { letter: string; up?: boolean; rotation?: number }) => {
   const trans = `translate(0 ${up ? -1.732 : 1.732})`;
   const rot = rotation ? `rotate(${rotation}) ` : "";
   const tor = rotation ? ` rotate(${-rotation})` : "";
@@ -28,13 +28,13 @@ const SvgEmptyHex = () => {
 export const MovementHelper = () => {
   return (
     <svg viewBox="-3 -3 6 6">
-      <SvgHex letter="Q" up rotation={-60} />
-      <SvgHex letter="W" up />
-      <SvgHex letter="E" up rotation={60} />
+      <SvgHexLetter letter="Q" up rotation={-60} />
+      <SvgHexLetter letter="W" up />
+      <SvgHexLetter letter="E" up rotation={60} />
       <SvgEmptyHex />
-      <SvgHex letter="A" rotation={60} />
-      <SvgHex letter="S" />
-      <SvgHex letter="D" rotation={-60} />
+      <SvgHexLetter letter="A" rotation={60} />
+      <SvgHexLetter letter="S" />
+      <SvgHexLetter letter="D" rotation={-60} />
     </svg>
   );
 };

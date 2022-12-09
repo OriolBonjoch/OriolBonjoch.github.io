@@ -1,5 +1,5 @@
 import { Fragment, useContext, useState } from "react";
-import CreateShipForm from "../ships/CreateShipForm";
+import { animated } from "react-spring";
 import { HexShip } from "./HexShip";
 import { calcCoords } from "./map.helper";
 import { HexCell } from "./HexCell";
@@ -8,8 +8,8 @@ import { ShipContext } from "../ships/ship.context";
 import { useHexMap } from "./hex-map.hook";
 import { useMapMovement } from "./hex-move.hook";
 import { ShipType } from "../ships/ship.types";
-import UpdateShipForm from "../ships/update-form/UpdateShipForm";
-import { animated } from "react-spring";
+import UpdateShipForm from "../ships/form/UpdateShipForm";
+import CreateShipForm from "../ships/form/CreateShipForm";
 import "./HexMap.css";
 
 type SizeType = { x: number; y: number };
