@@ -61,7 +61,7 @@ export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: (
           }}
         />
       ) : null}
-      <Button variant="outlined" onClick={onMoveStart}>
+      <Button variant="contained" onClick={onMoveStart}>
         Mover en mapa
       </Button>
     </>

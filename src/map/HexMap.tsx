@@ -1,6 +1,6 @@
-import { Fragment, useContext, useState } from "react";
-import { animated } from "react-spring";
-import { HexShip } from "./HexShip";
+import { Fragment, useContext, useEffect, useState } from "react";
+import { animated, Globals } from "react-spring";
+import { AnimatedHexShip, HexShip } from "./HexShip";
 import { calcCoords } from "./map.helper";
 import { HexCell } from "./HexCell";
 import { HexButton } from "./HexButton";
@@ -16,9 +16,11 @@ type SizeType = { x: number; y: number };
 
 export default function HexMap() {
   const { ships, prepareShip } = useContext(ShipContext);
+  const [currentStep, setCurrentStep] = useState(0);
   const [createShip, setCreateShip] = useState<SizeType | null>(null);
   const [updateShip, setUpdateShip] = useState<ShipType | null>(null);
 
+  const { step, applyMovement } = useContext(ShipContext);
   const { shipMoves, onHexMoveCancel, onHexMoveStart } = useHexMap();
   const { buttonPoints, viewport, animatedViewBox } = useMapMovement();
 
@@ -40,6 +42,24 @@ export default function HexMap() {
       setCreateShip({ x, y });
     }
   };
+
+  useEffect(() => {
+    if (step === currentStep) return;
+    if (Globals.skipAnimation) {
+      setCurrentStep(step);
+      applyMovement();
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setCurrentStep(step);
+      applyMovement();
+    }, 1300);
+
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [applyMovement, currentStep, step]);
 
   return (
     <>
@@ -63,12 +83,17 @@ export default function HexMap() {
           return <HexCell key={`${i}_${j}`} x={i} y={j} movement={pointMove} />;
         })}
         {ships.map((ship) => {
+          const pointMove = shipMoves.find((m) => m.x === ship.x && m.y === ship.y);
+          if (pointMove?.isBase) return null;
+          if (step !== currentStep) {
+            return <AnimatedHexShip key={ship.name} ship={ship} />;
+          }
+
           const [x1, y1] = calcCoords(ship.x, ship.y);
           const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
           const [x2, y2] = calcCoords(ship.x + vx, ship.y + vy);
-          const pointMove = shipMoves.find((m) => m.x === ship.x && m.y === ship.y);
           const moveToDegrees = ship ? 30 * (ship.nextMove.rotation % 12) : 0;
-          return pointMove?.isBase ? null : (
+          return (
             <Fragment key={ship.name}>
               <g transform={`translate(${x2} ${y2}) rotate(${moveToDegrees})`}>
                 <path fill="#999999" stroke="none" d={`M -0.7 0 L 0.5 -0.5 L 0.2 0 L 0.5 0.5 z`} />

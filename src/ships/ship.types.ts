@@ -8,6 +8,10 @@ export type PrepareMoveAction = {
   payload: { name: string; acceleration: number; rotation: number; vx: number; vy: number };
 };
 
+export type StartMovementAction = {
+  type: "START_MOVE";
+};
+
 export type MoveAction = {
   type: "MOVE";
 };
@@ -22,7 +26,13 @@ export type CreateAction = {
   payload: { name: string; x: number; y: number; rotation: number; speed: number; acceleration: number; color: string };
 };
 
-export type ActionType = FreeAction | PrepareMoveAction | MoveAction | DeleteAction | CreateAction;
+export type ActionType =
+  | FreeAction
+  | PrepareMoveAction
+  | StartMovementAction
+  | MoveAction
+  | DeleteAction
+  | CreateAction;
 
 export type HistoryType = {
   x: number;
@@ -38,6 +48,7 @@ export type MoveType = {
 };
 
 export type StateType = {
+  step: number;
   ships: Record<
     string,
     {

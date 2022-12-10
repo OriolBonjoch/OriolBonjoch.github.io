@@ -117,10 +117,10 @@ export default function UpdateShipForm(props: {
               value={ship.speed}
               onChange={(ev) => updateShip(shipname, "speed", parseInt(ev.target.value))}
             />
-            <MovementHelper />
+            <MovementHelper color={ship.color} rotation={ship.rotation} />
             <Button
               color="error"
-              variant="outlined"
+              variant="contained"
               onClick={() => {
                 deleteShip(shipname);
                 onClose();

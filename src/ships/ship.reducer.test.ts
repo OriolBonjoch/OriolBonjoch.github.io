@@ -4,6 +4,7 @@ import { StateType } from "./ship.types";
 describe("moveShipReduce", () => {
   test("default move is applied correctly", () => {
     const initialState: StateType = {
+      step: 0,
       ships: {
         "Nave #280": {
           x: 1,
@@ -20,6 +21,7 @@ describe("moveShipReduce", () => {
 
     const newState: StateType = moveShipReduce(initialState);
     expect(newState).toStrictEqual({
+      step: 0,
       ships: {
         "Nave #280": {
           x: 5,
@@ -37,6 +39,7 @@ describe("moveShipReduce", () => {
 
   test("turn move is applied correctly", () => {
     const initialState: StateType = {
+      step: 0,
       ships: {
         "Nave #280": {
           x: 5,
@@ -61,6 +64,7 @@ describe("moveShipReduce", () => {
 
     const newState: StateType = moveShipReduce(initialState);
     expect(newState).toStrictEqual({
+      step: 0,
       ships: {
         "Nave #280": {
           x: 3,

@@ -1,11 +1,16 @@
-import { useReducer } from "react";
+import { useCallback, useReducer } from "react";
 import { shipReducer } from "./ship.reducer";
 import { ActionType, ShipType } from "./ship.types";
 
 export function useShips() {
-  const [state, dispatch] = useReducer(shipReducer, { ships: {} });
+  const [state, dispatch] = useReducer(shipReducer, { step: 0, ships: {} });
+
+  const applyMovement = useCallback(() => {
+    dispatch({ type: "MOVE" });
+  }, []);
 
   return {
+    step: state.step,
     ships: Object.entries(state.ships).map(([name, ship]) => ({ name, ...ship })),
     createShip: (
       name: string,
@@ -43,7 +48,8 @@ export function useShips() {
         payload: { name, acceleration, rotation, vx, vy },
       }),
     moveShip: () => {
-      dispatch({ type: "MOVE" });
+      dispatch({ type: "START_MOVE" });
     },
+    applyMovement,
   };
 }

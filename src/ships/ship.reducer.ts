@@ -22,6 +22,7 @@ function defaultMovement(ship: { x: number; y: number; speed: number; rotation: 
 function createShipReducer(state: StateType, action: CreateAction): StateType {
   const { name, ...ship } = action.payload;
   return {
+    step: state.step,
     ships: {
       ...state.ships,
       [name]: {
@@ -35,7 +36,7 @@ function createShipReducer(state: StateType, action: CreateAction): StateType {
 
 function deleteShipReducer(state: StateType, action: DeleteAction) {
   const { [action.payload.name]: _, ...rest } = state.ships;
-  return { ships: rest };
+  return { step: state.step, ships: rest };
 }
 
 function updateShipReduce(state: StateType, action: FreeAction) {
@@ -46,6 +47,7 @@ function updateShipReduce(state: StateType, action: FreeAction) {
   };
 
   return {
+    step: state.step,
     ships: {
       ...state.ships,
       [action.payload.name]: {
@@ -67,6 +69,7 @@ function prepareShipReduce(state: StateType, action: PrepareMoveAction) {
   );
   const pickedMove = moves.findIndex(([x, y]) => x === vx && y === vy);
   return {
+    step: state.step,
     ships: {
       ...state.ships,
       [action.payload.name]: {
@@ -103,7 +106,7 @@ export function moveShipReduce(state: StateType) {
       [name]: newShip,
     };
   }, {});
-  return { ships };
+  return { step: state.step, ships };
 }
 
 export function shipReducer(state: StateType, action: ActionType): StateType {
@@ -118,6 +121,8 @@ export function shipReducer(state: StateType, action: ActionType): StateType {
       return prepareShipReduce(state, action);
     case "MOVE":
       return moveShipReduce(state);
+    case "START_MOVE":
+      return { ...state, step: state.step + 1 };
     default:
       return state;
   }
