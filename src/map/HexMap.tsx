@@ -61,6 +61,9 @@ export default function HexMap() {
     };
   }, [applyMovement, currentStep, step]);
 
+  const baseMovement = shipMoves.find((m) => m.isBase);
+  const drawableShips = !baseMovement ? ships : ships.filter((s) => baseMovement.x !== s.x && baseMovement.y !== s.y);
+
   return (
     <>
       <animated.svg viewBox={animatedViewBox} className="hexmap">
@@ -82,26 +85,28 @@ export default function HexMap() {
           const j = pointMove.y;
           return <HexCell key={`${i}_${j}`} x={i} y={j} movement={pointMove} />;
         })}
-        {ships.map((ship) => {
-          const pointMove = shipMoves.find((m) => m.x === ship.x && m.y === ship.y);
-          if (pointMove?.isBase) return null;
+        {step !== currentStep
+          ? null
+          : drawableShips.map((ship) => {
+              const moveToDegrees = ship ? 30 * (ship.nextMove.rotation % 12) : 0;
+              const [x1, y1] = calcCoords(ship.x, ship.y);
+              const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
+              const [x2, y2] = calcCoords(ship.x + vx, ship.y + vy);
+              return (
+                <Fragment key={ship.name}>
+                  <g transform={`translate(${x2} ${y2}) rotate(${moveToDegrees})`}>
+                    <path fill="#999999" stroke="none" d={`M -0.7 0 L 0.5 -0.5 L 0.2 0 L 0.5 0.5 z`} />
+                  </g>
+                  <line key={`line_${ship.name}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#999999" strokeWidth={0.2} />
+                </Fragment>
+              );
+            })}
+        {drawableShips.map((ship) => {
           if (step !== currentStep) {
             return <AnimatedHexShip key={ship.name} ship={ship} />;
           }
 
-          const [x1, y1] = calcCoords(ship.x, ship.y);
-          const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
-          const [x2, y2] = calcCoords(ship.x + vx, ship.y + vy);
-          const moveToDegrees = ship ? 30 * (ship.nextMove.rotation % 12) : 0;
-          return (
-            <Fragment key={ship.name}>
-              <g transform={`translate(${x2} ${y2}) rotate(${moveToDegrees})`}>
-                <path fill="#999999" stroke="none" d={`M -0.7 0 L 0.5 -0.5 L 0.2 0 L 0.5 0.5 z`} />
-              </g>
-              <line key={`line_${ship.name}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#999999" strokeWidth={0.2} />
-              <HexShip ship={ship} />
-            </Fragment>
-          );
+          return <HexShip key={ship.name} ship={ship} />;
         })}
         {buttonPoints.map(({ i, j }) => (
           <HexButton key={`${i}_${j}`} x={i} y={j} onClick={() => onCellClicked(i, j)} />

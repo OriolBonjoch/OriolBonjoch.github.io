@@ -9,56 +9,14 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import { MapContext } from "./map/map.context";
-import { ShipContext } from "./ships/ship.context";
-import { Globals } from "react-spring";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import Box from "@mui/material/Box";
 
-type SavedPlay = {
-  ships: {
-    name: string;
-    x: number;
-    y: number;
-    rotation: number;
-    speed: number;
-    color: string;
-  }[];
-  map: { x: number; y: number };
-};
-
-const usePersistence = (hideMenu: () => void) => {
-  const { size, createMap } = useContext(MapContext);
-  const { ships, createShip } = useContext(ShipContext);
-
-  const load = useCallback(() => {
-    hideMenu();
-    const jsonData = window.localStorage.getItem("guardado");
-    if (!jsonData) return;
-    const data = JSON.parse(jsonData) as SavedPlay;
-
-    createMap(`${data.map.x}`);
-    data.ships.forEach((s) => {
-      createShip(s.name, s.x, s.y, s.color, s.speed, 0, s.rotation);
-    });
-  }, [createMap, createShip, hideMenu]);
-
-  const save = useCallback(() => {
-    hideMenu();
-    const data = {
-      ships: ships.map(({ acceleration, ...s }) => s),
-      map: size,
-    };
-    const jsonData = JSON.stringify(data);
-    window.localStorage.setItem("guardado", jsonData);
-  }, [hideMenu, ships, size]);
-
-  return {
-    load,
-    save,
-  };
-};
+import { MapContext } from "./map/map.context";
+import { ShipContext } from "./ships/ship.context";
+import { Globals } from "react-spring";
+import { usePersistence } from "./utils/persistence.hook";
 
 export default function ApplicationBar() {
   const { size, isCreated, createMap, changeZoom, dragToShip } = useContext(MapContext);
@@ -67,6 +25,30 @@ export default function ApplicationBar() {
   const [anchorMenuFocus, setAnchorMenuFocus] = useState<HTMLElement>();
   const hideMenu = useCallback(() => setAnchorEl(null), []);
   const [animated, setAnimated] = useState(!Globals.skipAnimation);
+
+  const startMovement = () => {
+    // TODO: Center map before movement
+
+    // const points: Point[] = ships.flatMap((ship) => {
+    //   const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
+    //   const [x2, y2] = [ship.x + vx, ship.y + vy];
+    //   return [
+    //     { x: ship.x, y: ship.y },
+    //     { x: x2, y: y2 },
+    //   ];
+    // });
+
+    // const ratio = size.x / size.y;
+    // const [minX, minY] = [Math.min(...points.map((p) => p.x)) - 1, Math.min(...points.map((p) => p.y)) - 1];
+    // const [maxX, maxY] = [Math.max(...points.map((p) => p.x)) + 1, Math.max(...points.map((p) => p.y)) + 1];
+    // const [sizeX, sizeY] = [maxX - minX, maxY - minY];
+
+    // const zoomX = sizeX / sizeY > ratio ? sizeX : Math.ceil((sizeY * size.x) / size.y);
+    // const zoomY = Math.ceil((zoomX * sizeY) / sizeX);
+    // changeZoom(zoomX);
+    // centerTo(minX + zoomX / 2, minY + zoomY / 2);
+    moveShip();
+  };
 
   const { save, load } = usePersistence(hideMenu);
 
@@ -116,7 +98,7 @@ export default function ApplicationBar() {
         </Menu>
         {isCreated && ships.length ? (
           <>
-            <Button startIcon={<PlayArrow />} onClick={() => moveShip()}>
+            <Button startIcon={<PlayArrow />} onClick={startMovement}>
               Mover Todo
             </Button>
             <Button startIcon={<CenterFocusStrongIcon />} onClick={(ev) => setAnchorMenuFocus(ev.currentTarget)}>

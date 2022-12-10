@@ -45,6 +45,8 @@ export function useMap() {
     setCenter({ x: centerX, y: centerY });
   }, []);
 
+  const centerTo = useCallback((x: number, y: number) => setCenter({ x, y }), []);
+
   const dragTo = useCallback(
     (movement?: MoveKind) => {
       if (!movement) return;
@@ -79,6 +81,7 @@ export function useMap() {
     changeZoom,
     dragToShip,
     dragTo,
+    centerTo,
   } as const;
 }
 
@@ -91,4 +94,5 @@ export const MapContext = createContext<ReturnType<typeof useMap>>({
   changeZoom: () => null,
   dragToShip: () => null,
   dragTo: () => null,
+  centerTo: () => null,
 });
