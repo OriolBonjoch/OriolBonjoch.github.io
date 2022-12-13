@@ -13,8 +13,12 @@
   fill: #61dafb99;
 }
 
-.hexcell {
-  fill: none;
+.hexbuttonmove {
+  fill: #61dafb00;
+}
+
+.hexbuttonmove:hover {
+  fill: #61dafb99;
 }
 
 .hexcell .cross {
@@ -22,10 +26,17 @@
   stroke: none;
 }
 
+.hexbutton text {
+  user-select: none;
+  pointer-events: none;
+  text-anchor: middle;
+  stroke: none;
+  font-size: 0.4pt;
+  font-family: "Agency FB";
+}
 .hexcell text {
   user-select: none;
   pointer-events: none;
-  fill: #000;
   text-anchor: middle;
   stroke: none;
   font-size: 0.5pt;

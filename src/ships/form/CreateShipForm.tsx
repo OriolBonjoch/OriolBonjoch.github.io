@@ -1,6 +1,6 @@
 import { Button, Box, TextField, SwipeableDrawer } from "@mui/material";
 import { useContext, useState } from "react";
-import { ShipContext } from "../ship.context";
+import { ShipContext } from "../ShipContext";
 import Circle from "@uiw/react-color-circle";
 import { ShipFormPreview } from "./ShipFormPreview";
 import "./CreateShipForm.css";

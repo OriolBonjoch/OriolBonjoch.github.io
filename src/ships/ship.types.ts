@@ -3,9 +3,20 @@ export type FreeAction = {
   payload: { name: string; property: keyof Omit<ShipType, "name" | "nextMove">; value: unknown };
 };
 
+export type PrepareAccelerationMoveAction = {
+  type: "PREPARE_ACCELERATION_MOVE";
+  payload: { name: string; acceleration: number };
+};
+
 export type PrepareMoveAction = {
   type: "PREPARE_MOVE";
-  payload: { name: string; acceleration: number; rotation: number; vx: number; vy: number };
+  payload: {
+    name: string;
+    x: number;
+    y: number;
+    rotation: number;
+    isFirstMove: boolean;
+  };
 };
 
 export type StartMovementAction = {
@@ -28,6 +39,7 @@ export type CreateAction = {
 
 export type ActionType =
   | FreeAction
+  | PrepareAccelerationMoveAction
   | PrepareMoveAction
   | StartMovementAction
   | MoveAction
@@ -41,10 +53,14 @@ export type HistoryType = {
 };
 
 export type MoveType = {
-  rotation: number;
   acceleration: number;
-  pickedMove: number;
-  moves: [number, number][];
+  moves: {
+    rotation: number;
+    penalty: number;
+    x: number;
+    y: number;
+    distance: number;
+  }[];
 };
 
 export type StateType = {

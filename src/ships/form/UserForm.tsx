@@ -1,39 +1,24 @@
-import { useContext, useState } from "react";
+import { useState, useContext } from "react";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
-import { ShipContext } from "../ship.context";
 import { ShipType } from "../ship.types";
-import { calculateMoves, calculateSpeed } from "../../utils/move.hook";
 import { ShipFormPreview } from "./ShipFormPreview";
-import { SwitchMovement } from "./SwitchMovement";
+import { ShipContext } from "../ShipContext";
+import Ship from "../Ship";
 
 export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: () => void }) => {
   const [acceleration, setAcceleration] = useState(ship.nextMove.acceleration || 0);
-  const [pickedMove, setPickedMove] = useState(ship.nextMove.pickedMove);
-  const [rotation, setRotation] = useState(ship.nextMove.rotation);
-  const { prepareShip } = useContext(ShipContext);
-
-  const speed = calculateSpeed(ship.speed, acceleration, ship.rotation, rotation);
-  const moves = calculateMoves(ship.x, ship.y, speed, rotation);
-
-  function updateNextMove(acc: number, rot: number, p: number = 0) {
-    const speed = calculateSpeed(ship.speed, acc, ship.rotation, rot);
-    if (!moves.length && speed <= 0) return;
-    const [vx, vy] = moves[p];
-    prepareShip(ship.name, acc, rot, vx, vy);
-  }
+  const { updateAcceleration } = useContext(ShipContext);
+  const finalSpeed = ship.nextMove.moves.reduce((acc, cur) => acc - cur.penalty, ship.speed + acceleration);
 
   return (
     <>
-      <ShipFormPreview
-        rot={rotation}
-        color={ship.color}
-        texture={ship.color === "#" ? undefined : ship.color}
-        changeRotation={(r) => {
-          setRotation(r);
-          updateNextMove(acceleration, r);
-        }}
-      />
+      <ShipFormPreview rot={ship.rotation} color={ship.color} texture={ship.color === "#" ? undefined : ship.color} />
       <TextField
         label="Acceleración"
         type="number"
@@ -48,19 +33,41 @@ export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: (
         onChange={(ev) => {
           const acc = parseInt(ev.target.value);
           setAcceleration(acc);
-          updateNextMove(acc, rotation);
+          updateAcceleration(ship.name, acc);
         }}
       />
-      <TextField label="Velocidad" value={speed === ship.speed ? speed : `${ship.speed} => ${speed}`} disabled />
-      {moves.length > 1 ? (
-        <SwitchMovement
-          flipped={pickedMove % 2 === 0}
-          onClick={() => {
-            setPickedMove((prev) => ++prev % moves.length);
-            updateNextMove(acceleration, rotation, pickedMove);
-          }}
-        />
-      ) : null}
+      <TextField
+        label="Velocidad"
+        value={finalSpeed === ship.speed ? ship.speed : `${ship.speed} => ${finalSpeed}`}
+        disabled
+      />
+      <Table aria-label="simple table" sx={{ m: 0 }}>
+        <TableHead>
+          <TableRow>
+            <TableCell>Rotación</TableCell>
+            <TableCell>Distancia</TableCell>
+            <TableCell>Penalización</TableCell>
+          </TableRow>
+        </TableHead>
+        <TableBody>
+          {ship.nextMove.moves.map((row, i) => (
+            <TableRow key={i}>
+              <TableCell>
+                <svg viewBox="-1 -1 2 2">
+                  <g>
+                    <path d="M -1 0 L -0.5 -0.866 L 0.5 -0.866 L 1 0 L 0.5 0.866 L -0.5 0.866 z" fill="#c0c0c0" />
+                    <Ship x={0} y={0} rot={row.rotation} color="#F44E3B" />
+                  </g>
+                </svg>
+              </TableCell>
+              <TableCell component="th" scope="row">
+                {row.distance}
+              </TableCell>
+              <TableCell>{row.penalty}</TableCell>
+            </TableRow>
+          ))}
+        </TableBody>
+      </Table>
       <Button variant="contained" onClick={onMoveStart}>
         Mover en mapa
       </Button>

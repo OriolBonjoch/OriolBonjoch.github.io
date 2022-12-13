@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useContext } from "react";
 import ReactDOM from "react-dom/client";
 import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
 import HexMap from "./map/HexMap";
 import MapForm from "./map/MapForm";
-import { MapContext, useMap } from "./map/map.context";
-import { ShipContext } from "./ships/ship.context";
-import { useShips } from "./ships/ship.hook";
+import { MapContext, MapProvider } from "./map/MapContext";
+import { ShipProvider } from "./ships/ShipContext";
 import ApplicationBar from "./ApplicationBar";
 import reportWebVitals from "./reportWebVitals";
-import "./index.css";
 import { ConfigurationProvider } from "./utils/config.context";
+import "./index.css";
 
 declare module "@mui/material/styles" {
   interface Palette {
@@ -34,19 +33,22 @@ const theme = createTheme({
   },
 });
 
+function AppBody() {
+  const map = useContext(MapContext);
+  return map.isCreated ? <HexMap /> : <MapForm />;
+}
+
 function App() {
-  const map = useMap();
-  const ships = useShips();
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <ConfigurationProvider>
-        <MapContext.Provider value={map}>
-          <ShipContext.Provider value={ships}>
+        <MapProvider>
+          <ShipProvider>
             <ApplicationBar />
-            {map.isCreated ? <HexMap /> : <MapForm />}
-          </ShipContext.Provider>
-        </MapContext.Provider>
+            <AppBody />
+          </ShipProvider>
+        </MapProvider>
       </ConfigurationProvider>
     </ThemeProvider>
   );

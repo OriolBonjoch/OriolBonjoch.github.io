@@ -1,13 +1,13 @@
 import { Fragment, useContext, useEffect, useState } from "react";
 import { animated, Globals } from "react-spring";
 import { AnimatedHexShip, HexShip } from "./HexShip";
-import { calcCoords } from "./map.helper";
 import { HexCell } from "./HexCell";
-import { HexButton } from "./HexButton";
-import { ShipContext } from "../ships/ship.context";
+import { HexButton, HexMoveButton } from "./HexButton";
+import { ShipContext } from "../ships/ShipContext";
 import { useHexMap } from "./hex-map.hook";
 import { useMapMovement } from "./hex-move.hook";
 import { ShipType } from "../ships/ship.types";
+import { calcCoords } from "./map.helper";
 import UpdateShipForm from "../ships/form/UpdateShipForm";
 import CreateShipForm from "../ships/form/CreateShipForm";
 import "./HexMap.css";
@@ -15,29 +15,19 @@ import "./HexMap.css";
 type SizeType = { x: number; y: number };
 
 export default function HexMap() {
-  const { ships, prepareShip } = useContext(ShipContext);
+  const { ships } = useContext(ShipContext);
   const [currentStep, setCurrentStep] = useState(0);
   const [createShip, setCreateShip] = useState<SizeType | null>(null);
   const [updateShip, setUpdateShip] = useState<ShipType | null>(null);
 
   const { step, applyMovement } = useContext(ShipContext);
-  const { shipMoves, onHexMoveCancel, onHexMoveStart } = useHexMap();
+  const { shipMoves, onHexMoveStart, onHexMoveSetPath, onHexMoveCancel } = useHexMap();
   const { buttonPoints, viewport, animatedViewBox } = useMapMovement();
 
   const onCellClicked = (x: number, y: number) => {
     const ship = ships.find((s) => s.x === x && s.y === y);
-    const pointMove = shipMoves.find((m) => m.x === x && m.y === y);
     if (ship) {
-      if (pointMove?.isBase) onHexMoveCancel();
-      else setUpdateShip(ship);
-      return;
-    }
-
-    if (pointMove && !pointMove.isBase) {
-      const movedShip = ships.find((s) => s.name === pointMove.name);
-      if (!movedShip) return;
-      prepareShip(pointMove.name, pointMove.acc, pointMove.rot, x - movedShip.x, y - movedShip.y);
-      onHexMoveCancel();
+      setUpdateShip(ship);
     } else {
       setCreateShip({ x, y });
     }
@@ -83,21 +73,39 @@ export default function HexMap() {
         {shipMoves.map((pointMove) => {
           const i = pointMove.x;
           const j = pointMove.y;
-          return <HexCell key={`${i}_${j}`} x={i} y={j} movement={pointMove} />;
+          return (
+            <HexCell
+              key={`cell_${i}_${j}`}
+              x={i}
+              y={j}
+              movement={{
+                isBase: pointMove.isBase,
+                isValid: pointMove.isBase ? false : pointMove.isValid,
+                text: pointMove.isBase ? "" : pointMove.text,
+              }}
+            />
+          );
         })}
         {step !== currentStep
           ? null
           : drawableShips.map((ship) => {
-              const moveToDegrees = ship ? 30 * (ship.nextMove.rotation % 12) : 0;
-              const [x1, y1] = calcCoords(ship.x, ship.y);
-              const [vx, vy] = ship.nextMove.moves[ship.nextMove.pickedMove];
-              const [x2, y2] = calcCoords(ship.x + vx, ship.y + vy);
+              const lastMove = ship?.nextMove.moves.slice(-1)[0];
+              const moveToDegrees = ship ? 30 * (lastMove.rotation % 12) : 0;
+              const [x0, y0] = calcCoords(ship.x, ship.y);
+              const [xf, yf] = calcCoords(lastMove.x, lastMove.y);
+              const pathPoints = ship.nextMove.moves.map((m) => calcCoords(m.x, m.y));
               return (
                 <Fragment key={ship.name}>
-                  <g transform={`translate(${x2} ${y2}) rotate(${moveToDegrees})`}>
+                  <g transform={`translate(${xf} ${yf}) rotate(${moveToDegrees})`}>
                     <path fill="#999999" stroke="none" d={`M -0.7 0 L 0.5 -0.5 L 0.2 0 L 0.5 0.5 z`} />
                   </g>
-                  <line key={`line_${ship.name}`} x1={x1} y1={y1} x2={x2} y2={y2} stroke="#999999" strokeWidth={0.2} />
+                  <path
+                    key={`line_${ship.name}`}
+                    d={pathPoints.reduce((acc, [px, py]) => `${acc} L ${px} ${py}`, `M ${x0} ${y0}`)}
+                    fill="none"
+                    stroke="#999999"
+                    strokeWidth={0.2}
+                  />
                 </Fragment>
               );
             })}
@@ -108,9 +116,23 @@ export default function HexMap() {
 
           return <HexShip key={ship.name} ship={ship} />;
         })}
-        {buttonPoints.map(({ i, j }) => (
-          <HexButton key={`${i}_${j}`} x={i} y={j} onClick={() => onCellClicked(i, j)} />
-        ))}
+        {shipMoves.length
+          ? shipMoves.map((move) => {
+              const { x, y, isBase } = move;
+              return (
+                <HexMoveButton
+                  key={`${x}_${y}`}
+                  x={x}
+                  y={y}
+                  onClick={
+                    isBase ? () => onHexMoveCancel() : () => onHexMoveSetPath(x, y, move.rotation, move.distance)
+                  }
+                />
+              );
+            })
+          : buttonPoints.map(({ i, j }) => (
+              <HexButton key={`${i}_${j}`} x={i} y={j} onClick={() => onCellClicked(i, j)} />
+            ))}
       </animated.svg>
       {createShip ? <CreateShipForm {...createShip} onClose={() => setCreateShip(null)} /> : null}
       {updateShip ? (

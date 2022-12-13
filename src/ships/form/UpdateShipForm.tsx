@@ -9,7 +9,7 @@ import {
   FormControlLabel,
 } from "@mui/material";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { ShipContext } from "../ship.context";
+import { ShipContext } from "../ShipContext";
 import { ShipType } from "../ship.types";
 import { MovementHelper } from "./MovementHelper";
 import { ShipFormPreview } from "./ShipFormPreview";

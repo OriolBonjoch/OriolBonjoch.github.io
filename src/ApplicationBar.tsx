@@ -13,8 +13,8 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import Box from "@mui/material/Box";
 
-import { MapContext } from "./map/map.context";
-import { ShipContext } from "./ships/ship.context";
+import { MapContext } from "./map/MapContext";
+import { ShipContext } from "./ships/ShipContext";
 import { Globals } from "react-spring";
 import { usePersistence } from "./utils/persistence.hook";
 

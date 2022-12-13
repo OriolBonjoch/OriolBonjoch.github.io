@@ -1,7 +1,7 @@
 import { Box, Button, TextField } from "@mui/material";
 import { useContext, useRef } from "react";
-import { ShipContext } from "../ships/ship.context";
-import { MapContext } from "./map.context";
+import { ShipContext } from "../ships/ShipContext";
+import { MapContext } from "./MapContext";
 import "./MapForm.css";
 
 export default function MapForm() {

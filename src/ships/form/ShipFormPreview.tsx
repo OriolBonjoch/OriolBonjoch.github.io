@@ -12,7 +12,7 @@ export const ShipFormPreview = ({
   color: string;
   texture?: string;
   rot: number;
-  changeRotation: (rot: number) => void;
+  changeRotation?: (rot: number) => void;
 }) => {
   const [lock, setLock] = useState(true);
   const [newRotation, setNewRotation] = useState(rot);
@@ -38,6 +38,7 @@ export const ShipFormPreview = ({
       viewBox="-1 -1 2 2"
       onMouseMove={handleMouseMove}
       onClick={(_) => {
+        if (!changeRotation) return;
         setLock((prev) => !prev);
         if (!lock && rot !== newRotation) {
           changeRotation(newRotation);

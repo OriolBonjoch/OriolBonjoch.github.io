@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useMemo } from "react";
 import { useSpring } from "react-spring";
 
-import { MapContext, MoveKind } from "./map.context";
+import { MapContext, MoveKind } from "./MapContext";
 
 export const useMapMovement = function () {
   const { dragTo, viewport, size, center } = useContext(MapContext);
