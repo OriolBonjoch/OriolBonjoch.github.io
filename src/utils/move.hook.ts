@@ -108,7 +108,7 @@ export function calculateAllMoves(
   const allMoves = [...Array(12)].flatMap((_, newRotation) => {
     const moves: MoveType[] = [];
     const maxDistance = calculateSpeed(speed, rotation, newRotation);
-    for (let dist = newRotation % 2 ? 1 : 2; dist <= maxDistance; dist++) {
+    for (let dist = newRotation % 2 || speed < 2 ? 1 : 2; dist <= maxDistance; dist++) {
       moves.push(
         ...calculateMoves(x, y, dist, newRotation).map(([x, y]) => ({
           id: `${x}-${y}`,

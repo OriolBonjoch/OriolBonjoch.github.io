@@ -1,4 +1,4 @@
-import { calcNextPoint, calculateDistance, calculateMoves } from "./move.hook";
+import { calcNextPoint, calculateAllMoves, calculateDistance, calculateMoves } from "./move.hook";
 
 describe("calculateMoves", () => {
   test.each`
@@ -48,4 +48,13 @@ describe("calculateMoves", () => {
       expect(distance).toBe(expected);
     }
   );
+
+  test("calculate next movements work", () => {
+    const moves = calculateAllMoves(7, -6, 1, 4);
+    const result = moves.map(({ x, y }) => [x, y]);
+    expect(result).toStrictEqual([
+      [7, -7],
+      [8, -6],
+    ]);
+  });
 });

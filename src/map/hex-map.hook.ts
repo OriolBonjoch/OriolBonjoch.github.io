@@ -45,7 +45,7 @@ export const useHexMap = function () {
   const onHexMoveSetPath = useCallback(
     (x: number, y: number, rotation: number, distance: number) => {
       const ship = ships.find((s) => s.name === shipMoved?.name);
-      const lastMove = ship?.nextMove.moves.slice(-1)[0]; // previous move
+      const lastMove = ship?.nextMove.moves.slice(-1)[0];
       if (!shipMoved || !ship || !lastMove) {
         console.error("something is missing", shipMoved, ship, lastMove);
         return;

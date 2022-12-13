@@ -60,10 +60,8 @@ export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: (
                   </g>
                 </svg>
               </TableCell>
-              <TableCell component="th" scope="row">
-                {row.distance}
-              </TableCell>
-              <TableCell>{row.penalty}</TableCell>
+              <TableCell align="center">{row.distance}</TableCell>
+              <TableCell align="center">{row.penalty}</TableCell>
             </TableRow>
           ))}
         </TableBody>
