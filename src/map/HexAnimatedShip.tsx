@@ -3,12 +3,7 @@ import Ship from "../ships/Ship";
 import { ShipType } from "../ships/ship.types";
 import { calcCoords } from "./map.helper";
 
-export function HexShip({ ship }: { ship: ShipType }) {
-  const { x, y, color, rotation } = ship;
-  return <Ship x={x} y={y} color={color} texture={color[0] === "#" ? undefined : color} rot={rotation} />;
-}
-
-function getPath(ship: ShipType) {
+function getAnimatedPath(ship: ShipType) {
   const { x, y, nextMove } = ship;
   const [x0, y0] = calcCoords(x, y);
   const pathPoints = nextMove.moves.map((m) => calcCoords(m.x, m.y));
@@ -16,17 +11,16 @@ function getPath(ship: ShipType) {
   return pathPoints.reduce((acc, [px, py]) => `${acc} L ${px} ${py}`, `M ${x0} ${y0}`);
 }
 
-export function AnimatedHexShip({ ship }: { ship: ShipType }) {
+export function HexAnimatedShip({ ship, onFinish }: { ship: ShipType; onFinish: () => void }) {
   const { color } = ship;
-  const path = getPath(ship);
+  const path = getAnimatedPath(ship);
 
   const { offsetDistance } = useSpring({
     from: { offsetDistance: "0%" },
     to: { offsetDistance: "100%" },
     loop: false,
-    config: {
-      duration: 1000,
-    },
+    config: { duration: 3000 },
+    onRest: () => onFinish(),
   });
 
   return (
