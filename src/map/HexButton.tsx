@@ -6,9 +6,6 @@ export function HexButton({ x, y, onClick }: { x: number; y: number; onClick: ()
   return (
     <g id={hexId} className="hexbutton" transform={`translate(${x0} ${y0})`} onClick={onClick}>
       <path d={`M -1 0 L -0.5 ${-halfsqrt3} L 0.5 ${-halfsqrt3} L 1 0 L 0.5 ${halfsqrt3} L -0.5 ${halfsqrt3} z`} />
-      <text fontSize={0.4} fill="black" dominantBaseline="middle">
-        {`${x}/${y}`}
-      </text>
     </g>
   );
 }
