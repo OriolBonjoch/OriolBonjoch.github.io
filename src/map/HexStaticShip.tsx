@@ -1,4 +1,4 @@
-import Ship from "../ships/Ship";
+import { Ship } from "../ships/Ship";
 import { ShipType } from "../ships/ship.types";
 import { HexShipGhostMovement } from "./HexShipGhostMovement";
 

@@ -1,19 +1,14 @@
 import Masonry from "@mui/lab/Masonry";
+import { styled } from "@mui/material/styles";
 import { selectableShips } from "../ship-selection";
 
-const ShipSelectorImage = ({
-  source,
-  selected,
-  onSelect,
-}: {
-  source?: string;
+type ShipSelectorImageProps = {
   selected: boolean | null;
-  onSelect: () => void;
-}) => {
-  if (!source) return null;
-  const className = selected === null ? "" : selected ? "ship-selected" : "ship-unselected";
-  return <img src={source} className={className} alt="ship_image" onClick={() => onSelect()} />;
 };
+
+const ShipSelectorImage = styled("img")<ShipSelectorImageProps>(({ selected }) => ({
+  "&": selected ? { backgroundColor: "#fff3" } : { opacity: 0.4 },
+}));
 
 export const ShipSelector = ({
   selectedShip,
@@ -28,9 +23,9 @@ export const ShipSelector = ({
         return (
           <ShipSelectorImage
             key={key}
-            source={value}
+            src={value}
             selected={selectedShip ? key === selectedShip : null}
-            onSelect={() => selectShip(key)}
+            onClick={() => selectShip(key)}
           />
         );
       })}

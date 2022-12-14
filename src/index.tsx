@@ -1,37 +1,14 @@
 import React, { useContext } from "react";
 import ReactDOM from "react-dom/client";
-import { createTheme, CssBaseline, ThemeProvider } from "@mui/material";
-import HexMap from "./map/HexMap";
-import MapForm from "./map/MapForm";
+import { CssBaseline, ThemeProvider } from "@mui/material";
+import { HexMap } from "./map/HexMap";
+import { MapForm } from "./map/MapForm";
 import { MapContext, MapProvider } from "./map/MapContext";
 import { ShipProvider } from "./ships/ShipContext";
-import ApplicationBar from "./ApplicationBar";
+import ApplicationBar from "./utils/ApplicationBar";
 import reportWebVitals from "./reportWebVitals";
 import { ConfigurationProvider } from "./utils/config.context";
-import "./index.css";
-
-declare module "@mui/material/styles" {
-  interface Palette {
-    hexColor: Palette["primary"];
-    hexStroke: Palette["primary"];
-  }
-  interface PaletteOptions {
-    hexColor: PaletteOptions["primary"];
-    hexStroke: PaletteOptions["primary"];
-  }
-}
-
-const theme = createTheme({
-  palette: {
-    hexColor: {
-      main: "#ffffff",
-    },
-    hexStroke: {
-      main: "#ffffff",
-    },
-    mode: "dark",
-  },
-});
+import { theme } from "./utils/theme";
 
 function AppBody() {
   const map = useContext(MapContext);

@@ -1,14 +1,13 @@
-import {
-  Button,
-  Box,
-  TextField,
-  SwipeableDrawer,
-  FormControl,
-  Typography,
-  Switch,
-  FormControlLabel,
-} from "@mui/material";
 import { useCallback, useContext, useEffect, useMemo, useState } from "react";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import SwipeableDrawer from "@mui/material/SwipeableDrawer";
+import FormControl from "@mui/material/FormControl";
+import Typography from "@mui/material/Typography";
+import Switch from "@mui/material/Switch";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import Container from "@mui/material/Container";
+import Stack from "@mui/material/Stack";
 import { ShipContext } from "../ShipContext";
 import { ShipType } from "../ship.types";
 import { MovementHelper } from "./MovementHelper";
@@ -86,59 +85,62 @@ export default function UpdateShipForm(props: {
         keepMounted: true,
       }}
     >
-      <Box component="form" noValidate className="ship-form-container" autoComplete="off" sx={{ "&>*": { m: 1 } }}>
-        <FormControl>
-          <FormControlLabel
-            control={<Switch checked={isAdmin} onChange={(ev) => setIsAdmin(ev.target.checked)} />}
-            label="Master"
-            labelPlacement="end"
-          />
-        </FormControl>
-        <Typography variant="h5" align="center" gutterBottom>
-          {ship.name}
-        </Typography>
-        {isAdmin ? (
-          <>
-            <ShipFormPreview
-              rot={ship.rotation}
-              color={ship.color}
-              texture={ship.color === "#" ? undefined : ship.color}
-              changeRotation={(r) => updateShip(shipname, "rotation", r)}
+      <Container>
+        <Stack component="form" noValidate autoComplete="off" spacing={2}>
+          <FormControl>
+            <FormControlLabel
+              control={<Switch checked={isAdmin} onChange={(ev) => setIsAdmin(ev.target.checked)} />}
+              label="Master"
+              labelPlacement="end"
             />
-            <TextField
-              label="Acceleración máxima"
-              type="number"
-              value={ship.acceleration}
-              onChange={(ev) => updateShip(shipname, "acceleration", parseInt(ev.target.value))}
-            />
-            <TextField
-              label="Velocidad"
-              type="number"
-              value={ship.speed}
-              onChange={(ev) => updateShip(shipname, "speed", parseInt(ev.target.value))}
-            />
-            <MovementHelper color={ship.color} rotation={ship.rotation} />
-            <Button
-              color="error"
-              variant="contained"
-              onClick={() => {
-                deleteShip(shipname);
+          </FormControl>
+          <Typography variant="h5" align="center" gutterBottom>
+            {ship.name}
+          </Typography>
+          {isAdmin ? (
+            <>
+              <ShipFormPreview
+                rot={ship.rotation}
+                color={ship.color}
+                texture={ship.color === "#" ? undefined : ship.color}
+                changeRotation={(r) => updateShip(shipname, "rotation", r)}
+              />
+              <TextField
+                label="Acceleración máxima"
+                type="number"
+                value={ship.acceleration}
+                onChange={(ev) => updateShip(shipname, "acceleration", parseInt(ev.target.value))}
+              />
+              <TextField
+                label="Velocidad"
+                type="number"
+                value={ship.speed}
+                InputProps={{ inputProps: { min: 0, step: 1 } }}
+                onChange={(ev) => updateShip(shipname, "speed", parseInt(ev.target.value))}
+              />
+              <MovementHelper color={ship.color} rotation={ship.rotation} />
+              <Button
+                color="error"
+                variant="contained"
+                onClick={() => {
+                  deleteShip(shipname);
+                  onClose();
+                }}
+              >
+                Eliminar
+              </Button>
+            </>
+          ) : (
+            <UserForm
+              ship={ship}
+              onMoveStart={() => {
+                onMoveStart(ship);
                 onClose();
               }}
-            >
-              Eliminar
-            </Button>
-          </>
-        ) : (
-          <UserForm
-            ship={ship}
-            onMoveStart={() => {
-              onMoveStart(ship);
-              onClose();
-            }}
-          />
-        )}
-      </Box>
+            />
+          )}
+        </Stack>
+      </Container>
     </SwipeableDrawer>
   );
 }

@@ -42,6 +42,11 @@ export const useMapMovement = function () {
   return {
     buttonPoints,
     animatedViewBox,
-    viewport,
+    backgroundBox: {
+      x: viewport[0] - 3,
+      y: viewport[1] - 1.732,
+      width: viewport[2] + 6,
+      height: viewport[3] + 3.464,
+    },
   } as const;
 };

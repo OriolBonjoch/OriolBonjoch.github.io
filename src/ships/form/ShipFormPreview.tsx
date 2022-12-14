@@ -1,19 +1,22 @@
+import { styled } from "@mui/material/styles";
 import { useCallback, useRef, useState } from "react";
-import Ship from "../Ship";
+import { Ship } from "../Ship";
+import { Hex } from "../../map/Hex";
 
-const hexPath = "M -1 0 L -0.5 -0.866 L 0.5 -0.866 L 1 0 L 0.5 0.866 L -0.5 0.866 z";
-
-export const ShipFormPreview = ({
-  rot,
-  changeRotation,
-  color,
-  texture,
-}: {
+type Props = {
   color: string;
   texture?: string;
   rot: number;
   changeRotation?: (rot: number) => void;
-}) => {
+};
+
+const PreviewSvg = styled("svg")({
+  width: "200px",
+  height: "auto",
+  margin: "20px",
+});
+
+export const ShipFormPreview = ({ rot, changeRotation, color, texture }: Props) => {
   const [lock, setLock] = useState(true);
   const [newRotation, setNewRotation] = useState(rot);
   const svgElement = useRef<SVGSVGElement>(null);
@@ -33,7 +36,7 @@ export const ShipFormPreview = ({
   );
 
   return (
-    <svg
+    <PreviewSvg
       ref={svgElement}
       viewBox="-1 -1 2 2"
       onMouseMove={handleMouseMove}
@@ -46,11 +49,11 @@ export const ShipFormPreview = ({
       }}
     >
       <g>
-        <path d={hexPath} fill="#c0c0c0" />
+        <Hex />
         <g transform={lock ? "" : "scale(0.5 0.5)"}>
           <Ship x={0} y={0} rot={lock ? rot : newRotation} color={color} texture={texture} />
         </g>
       </g>
-    </svg>
+    </PreviewSvg>
   );
 };

@@ -1,22 +1,25 @@
-import { createContext, useCallback, useContext, useState } from "react";
+import { useState, createContext, PropsWithChildren, useCallback, useContext } from "react";
 
-const ConfigurationContext = createContext({
-  animated: true,
-  toggleAnimation: () => {},
-});
+const defaultConfiguration = {
+  isCreateEnabled: true,
+  toggleCreationMode: () => {},
+};
+
+export const ConfigurationContext = createContext(defaultConfiguration);
+
+export const ConfigurationProvider = ({ children }: PropsWithChildren) => {
+  const [isCreateEnabled, setIsCreateEnabled] = useState(defaultConfiguration.isCreateEnabled);
+
+  const toggleCreationMode = useCallback(() => setIsCreateEnabled((prev) => !prev), []);
+
+  return (
+    <ConfigurationContext.Provider value={{ isCreateEnabled, toggleCreationMode }}>
+      {children}
+    </ConfigurationContext.Provider>
+  );
+};
 
 export const useConfiguration = () => {
   const config = useContext(ConfigurationContext);
   return config;
-};
-
-export const ConfigurationProvider = ({ children }: React.PropsWithChildren) => {
-  const [animated, setAnimated] = useState(false);
-  const toggleAnimation = useCallback(() => {
-    setAnimated((prev) => !prev);
-  }, []);
-
-  return (
-    <ConfigurationContext.Provider value={{ animated, toggleAnimation }}>{children}</ConfigurationContext.Provider>
-  );
 };

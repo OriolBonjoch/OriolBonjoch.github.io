@@ -1,5 +1,5 @@
 import { animated, useSpring } from "react-spring";
-import Ship from "../ships/Ship";
+import { Ship } from "../ships/Ship";
 import { ShipType } from "../ships/ship.types";
 import { calcCoords } from "./map.helper";
 

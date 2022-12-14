@@ -1,39 +1,35 @@
-import { Box, Button, TextField } from "@mui/material";
 import { useContext, useRef } from "react";
+import Stack from "@mui/material/Stack";
+import Button from "@mui/material/Button";
+import TextField from "@mui/material/TextField";
+import Container from "@mui/material/Container";
+import { styled } from "@mui/material/styles";
 import { ShipContext } from "../ships/ShipContext";
 import { MapContext } from "./MapContext";
-import "./MapForm.css";
+import { useAppBarHeight } from "../utils/app-bar-height.hook";
 
-export default function MapForm() {
+const StyledContainer = styled(Container)(({ theme }) => {
+  const height = useAppBarHeight(theme);
+  return { marginTop: height };
+});
+
+export const MapForm = () => {
   const { size, createMap } = useContext(MapContext);
   const { ships, deleteShip } = useContext(ShipContext);
   const widthInput = useRef<HTMLInputElement>(null);
-  const heightInput = useRef<HTMLInputElement>(null);
+  const createMapClicked = () => {
+    ships.forEach((s) => deleteShip(s.name));
+    createMap(widthInput.current?.value);
+  };
 
   return (
-    <Box
-      component="form"
-      noValidate
-      className="map-form-container"
-      autoComplete="off"
-      sx={{
-        "&": {
-          marginTop: "90px",
-        },
-        "&>*": { m: 1 },
-      }}
-    >
-      <TextField label="Ancho del mapa" type="number" inputRef={widthInput} defaultValue={size.x} />
-      <TextField label="Alto del mapa" type="number" inputRef={heightInput} defaultValue={size.y} />
-      <Button
-        variant="contained"
-        onClick={() => {
-          ships.forEach((s) => deleteShip(s.name));
-          createMap(widthInput.current?.value);
-        }}
-      >
-        Crear
-      </Button>
-    </Box>
+    <StyledContainer>
+      <Stack component="form" noValidate autoComplete="off" spacing={2}>
+        <TextField label="Ancho inicial del mapa" type="number" inputRef={widthInput} defaultValue={size.x} />
+        <Button variant="contained" onClick={createMapClicked}>
+          Crear
+        </Button>
+      </Stack>
+    </StyledContainer>
   );
-}
+};

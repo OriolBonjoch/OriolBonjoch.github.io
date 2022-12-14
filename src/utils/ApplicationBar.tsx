@@ -13,14 +13,17 @@ import FormControlLabel from "@mui/material/FormControlLabel";
 import Switch from "@mui/material/Switch";
 import Box from "@mui/material/Box";
 
-import { MapContext } from "./map/MapContext";
-import { ShipContext } from "./ships/ShipContext";
+import { MapContext } from "../map/MapContext";
+import { ShipContext } from "../ships/ShipContext";
 import { Globals } from "react-spring";
-import { usePersistence } from "./utils/persistence.hook";
+import { usePersistence } from "./persistence.hook";
+import { useConfiguration } from "./config.context";
 
 export default function ApplicationBar() {
   const { size, isCreated, createMap, changeZoom, dragToShip } = useContext(MapContext);
   const { ships, moveShip } = useContext(ShipContext);
+  const config = useConfiguration();
+
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [anchorMenuFocus, setAnchorMenuFocus] = useState<HTMLElement>();
   const hideMenu = useCallback(() => setAnchorEl(null), []);
@@ -52,12 +55,22 @@ export default function ApplicationBar() {
 
   const { save, load } = usePersistence(hideMenu);
 
+  const createMapClick = () => {
+    hideMenu();
+    createMap();
+  };
+
+  const onAnimatedSwitch = (ev: React.ChangeEvent<HTMLInputElement>) => {
+    setAnimated(ev.target.checked);
+    Globals.assign({ skipAnimation: !ev.target.checked });
+  };
+
   useEffect(() => {
     changeZoom(size.x);
   }, [changeZoom, size.x]);
 
   return (
-    <AppBar position="fixed">
+    <AppBar position="static">
       <Toolbar>
         <IconButton
           size="large"
@@ -73,50 +86,34 @@ export default function ApplicationBar() {
         <Menu
           id="menu-appbar"
           anchorEl={anchorEl}
-          anchorOrigin={{
-            vertical: "top",
-            horizontal: "left",
-          }}
+          anchorOrigin={{ vertical: "top", horizontal: "left" }}
           keepMounted
-          transformOrigin={{
-            vertical: "top",
-            horizontal: "right",
-          }}
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
           open={!!anchorEl}
           onClose={() => hideMenu()}
         >
-          <MenuItem
-            onClick={() => {
-              hideMenu();
-              createMap();
-            }}
-          >
-            Nuevo mapa
-          </MenuItem>
+          <MenuItem onClick={createMapClick}>Nuevo mapa</MenuItem>
           {isCreated ? <MenuItem onClick={save}>Guardar</MenuItem> : null}
           <MenuItem onClick={load}>Cargar</MenuItem>
         </Menu>
         {isCreated && ships.length ? (
           <>
-            <Button startIcon={<PlayArrow />} onClick={startMovement}>
+            <Button color="inherit" startIcon={<PlayArrow />} onClick={startMovement}>
               Mover Todo
             </Button>
-            <Button startIcon={<CenterFocusStrongIcon />} onClick={(ev) => setAnchorMenuFocus(ev.currentTarget)}>
+            <Button
+              color="inherit"
+              startIcon={<CenterFocusStrongIcon />}
+              onClick={(ev) => setAnchorMenuFocus(ev.currentTarget)}
+            >
               Centrar
             </Button>
             <Menu
-              sx={{ mt: "45px" }}
               id="menu-focus"
               anchorEl={anchorMenuFocus}
-              anchorOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
+              anchorOrigin={{ vertical: "top", horizontal: "right" }}
               keepMounted
-              transformOrigin={{
-                vertical: "top",
-                horizontal: "right",
-              }}
+              transformOrigin={{ vertical: "top", horizontal: "right" }}
               open={!!anchorMenuFocus}
               onClose={() => setAnchorMenuFocus(undefined)}
             >
@@ -128,19 +125,16 @@ export default function ApplicationBar() {
             </Menu>
           </>
         ) : null}
-        <Box sx={{ flexGrow: 1 }} />
+        <Box flexGrow={1} />
         <FormControlLabel
-          control={
-            <Switch
-              checked={animated}
-              onChange={(ev) => {
-                setAnimated(ev.target.checked);
-                Globals.assign({ skipAnimation: !ev.target.checked });
-              }}
-            />
-          }
+          control={<Switch checked={animated} onChange={onAnimatedSwitch} />}
           labelPlacement="start"
           label="Animar"
+        />
+        <FormControlLabel
+          control={<Switch checked={config.isCreateEnabled} onChange={() => config.toggleCreationMode()} />}
+          labelPlacement="start"
+          label="Añadir naves"
         />
       </Toolbar>
     </AppBar>

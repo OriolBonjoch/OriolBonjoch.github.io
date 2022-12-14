@@ -6,10 +6,13 @@ import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import Badge from "@mui/material/Badge";
+import Typography from "@mui/material/Typography";
 import { ShipType } from "../ship.types";
 import { ShipFormPreview } from "./ShipFormPreview";
 import { ShipContext } from "../ShipContext";
-import Ship from "../Ship";
+import { Ship } from "../Ship";
+import { Hex } from "../../map/Hex";
 
 export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: () => void }) => {
   const [acceleration, setAcceleration] = useState(ship.nextMove.acceleration || 0);
@@ -41,27 +44,27 @@ export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: (
         value={finalSpeed === ship.speed ? ship.speed : `${ship.speed} => ${finalSpeed}`}
         disabled
       />
-      <Table aria-label="simple table" sx={{ m: 0 }}>
+      <Table aria-label="simple table">
         <TableHead>
           <TableRow>
             <TableCell>Rotación</TableCell>
             <TableCell>Distancia</TableCell>
-            <TableCell>Penalización</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {ship.nextMove.moves.map((row, i) => (
+          {ship.nextMove.moves.map((move, i) => (
             <TableRow key={i}>
               <TableCell>
                 <svg viewBox="-1 -1 2 2">
-                  <g>
-                    <path d="M -1 0 L -0.5 -0.866 L 0.5 -0.866 L 1 0 L 0.5 0.866 L -0.5 0.866 z" fill="#c0c0c0" />
-                    <Ship x={0} y={0} rot={row.rotation} color="#F44E3B" />
-                  </g>
+                  <Hex />
+                  <Ship x={0} y={0} rot={move.rotation} />
                 </svg>
               </TableCell>
-              <TableCell align="center">{row.distance}</TableCell>
-              <TableCell align="center">{row.penalty}</TableCell>
+              <TableCell align="center">
+                <Badge badgeContent={move.penalty} color="error">
+                  <Typography variant="h4">{move.distance}</Typography>
+                </Badge>
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>

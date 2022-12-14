@@ -22,8 +22,8 @@ type ShipMovedType = {
 export const useHexMap = function () {
   const [shipMoved, setShipMoved] = useState<ShipMovedType | null>(null);
   const [shipMoves, setShipMoves] = useState<MoveType[]>([]);
-  const { ships, prepareShip } = useContext(ShipContext);
   const [isFirstMovement, setIsFirstMovement] = useState(false);
+  const { ships, prepareShip } = useContext(ShipContext);
 
   const onHexMoveStart = useCallback((ship: ShipType) => {
     const acceleration = ship.nextMove.acceleration || 0;
@@ -52,7 +52,7 @@ export const useHexMap = function () {
       }
 
       const totalDistance = ship.speed + (ship.nextMove.acceleration || 0);
-      const penalty = calculatePenalty(lastMove.rotation, rotation);
+      const penalty = calculatePenalty(isFirstMovement ? ship.rotation : lastMove.rotation, rotation);
       const pendingDistance = isFirstMovement
         ? totalDistance
         : ship.nextMove.moves.reduce((acc, cur) => acc - cur.distance - cur.penalty, totalDistance);

@@ -1,6 +1,21 @@
+import { styled } from "@mui/material/styles";
 import { ShipType } from "../ships/ship.types";
 import { calcCoords } from "./map.helper";
-import "./HexMap.css";
+
+const ShipGhostStyle = styled("path")(({ theme }) => {
+  return {
+    stroke: "none",
+    fill: theme.palette.ghost[theme.palette.mode],
+  };
+});
+
+const GhostPathStyle = styled("path")(({ theme }) => {
+  return {
+    fill: "none",
+    stroke: theme.palette.ghost[theme.palette.mode],
+    strokeWidth: theme.spacing(0.03),
+  };
+});
 
 export function HexShipGhostMovement({ ship }: { ship: ShipType }) {
   const lastMove = ship?.nextMove.moves.slice(-1)[0];
@@ -11,15 +26,9 @@ export function HexShipGhostMovement({ ship }: { ship: ShipType }) {
   return (
     <>
       <g transform={`translate(${xf} ${yf}) rotate(${moveToDegrees})`}>
-        <path fill="#999999" stroke="none" d={`M -0.7 0 L 0.5 -0.5 L 0.2 0 L 0.5 0.5 z`} />
+        <ShipGhostStyle d={`M -0.7 0 L 0.5 -0.5 L 0.2 0 L 0.5 0.5 z`} />
       </g>
-      <path
-        key={`line_${ship.name}`}
-        d={pathPoints.reduce((acc, [px, py]) => `${acc} L ${px} ${py}`, `M ${x0} ${y0}`)}
-        fill="none"
-        stroke="#999999"
-        strokeWidth={0.2}
-      />
+      <GhostPathStyle d={pathPoints.reduce((acc, [px, py]) => `${acc} L ${px} ${py}`, `M ${x0} ${y0}`)} />
     </>
   );
 }

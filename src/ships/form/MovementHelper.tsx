@@ -1,30 +1,34 @@
-import Ship from "../Ship";
+import { styled } from "@mui/material/styles";
+import { Ship } from "../Ship";
+import { Hex } from "../../map/Hex";
 
-const hexPath = "M -1 0 L -0.5 -0.866 L 0.5 -0.866 L 1 0 L 0.5 0.866 L -0.5 0.866 z";
+type Props = { letter: string; up?: boolean; rotation?: number };
 
-const SvgHexLetter = ({ letter, up, rotation }: { letter: string; up?: boolean; rotation?: number }) => {
+const StyledText = styled("text")(({ theme }) => {
+  const foreground = theme.palette.hex[theme.palette.mode];
+  const fill = theme.palette.getContrastText(foreground);
+  return {
+    fill,
+    userSelect: "none",
+    pointerEvents: "none",
+    textAnchor: "middle",
+    stroke: "none",
+    fontSize: "0.6pt",
+  };
+});
+
+const SvgHexLetter = ({ letter, up, rotation }: Props) => {
   const trans = `translate(0 ${up ? -1.732 : 1.732})`;
   const rot = rotation ? `rotate(${rotation}) ` : "";
   const tor = rotation ? ` rotate(${-rotation})` : "";
   return (
     <g>
-      <path d={hexPath} transform={rot + trans} stroke="#000000" strokeWidth={0.05} fill="#c0c0c0"></path>
-      <text
-        x={0}
-        transform={rot + trans + tor}
-        dominantBaseline="middle"
-        textAnchor="middle"
-        stroke="none"
-        fontSize="0.8"
-      >
+      <Hex transform={rot + trans} withStroke />
+      <StyledText transform={rot + trans + tor} dominantBaseline="middle">
         {letter}
-      </text>
+      </StyledText>
     </g>
   );
-};
-
-const SvgEmptyHex = () => {
-  return <path d={hexPath} stroke="#000000" strokeWidth={0.05} fill="#c0c0c0" />;
 };
 
 export const MovementHelper = ({ color, rotation }: { color?: string; rotation?: number }) => {
@@ -33,7 +37,7 @@ export const MovementHelper = ({ color, rotation }: { color?: string; rotation?:
       <SvgHexLetter letter="Q" up rotation={-60} />
       <SvgHexLetter letter="W" up />
       <SvgHexLetter letter="E" up rotation={60} />
-      <SvgEmptyHex />
+      <Hex withStroke />
       <Ship
         x={0}
         y={0}
