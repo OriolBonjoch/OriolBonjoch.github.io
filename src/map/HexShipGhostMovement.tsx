@@ -1,6 +1,6 @@
 import { styled } from "@mui/material/styles";
 import { ShipType } from "../ships/ship.types";
-import { calcCoords } from "./map.helper";
+import { calcCoords } from "../utils/mapper.helper";
 
 const ShipGhostStyle = styled("path")(({ theme }) => {
   return {

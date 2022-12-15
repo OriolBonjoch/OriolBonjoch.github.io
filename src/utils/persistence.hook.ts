@@ -1,6 +1,6 @@
 import { useCallback, useContext } from "react";
-import { MapContext } from "../map/MapContext";
-import { ShipContext } from "../ships/ShipContext";
+import { MapContext } from "../map/MapProvider";
+import { ShipContext } from "../ships/ShipProvider";
 
 type SavedPlay = {
   ships: {

@@ -9,20 +9,25 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Switch from "@mui/material/Switch";
 import Box from "@mui/material/Box";
+import ToggleButton from "@mui/material/ToggleButton";
+import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
+import Brightness4Icon from "@mui/icons-material/Brightness4";
+import Brightness7Icon from "@mui/icons-material/Brightness7";
+import { useTheme } from "@mui/material/styles";
 
-import { MapContext } from "../map/MapContext";
-import { ShipContext } from "../ships/ShipContext";
+import { MapContext } from "../map/MapProvider";
+import { ShipContext } from "../ships/ShipProvider";
 import { Globals } from "react-spring";
-import { usePersistence } from "./persistence.hook";
-import { useConfiguration } from "./config.context";
+import { usePersistence } from "../utils/persistence.hook";
+import { useConfiguration } from "./ConfigProvider";
+import { AddAsteroidIcon, AddShipIcon, AnimatedIcon, StaticIcon } from "./ApplicationBarIcons";
 
 export default function ApplicationBar() {
   const { size, isCreated, createMap, changeZoom, dragToShip } = useContext(MapContext);
   const { ships, moveShip } = useContext(ShipContext);
   const config = useConfiguration();
+  const theme = useTheme();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [anchorMenuFocus, setAnchorMenuFocus] = useState<HTMLElement>();
@@ -60,9 +65,9 @@ export default function ApplicationBar() {
     createMap();
   };
 
-  const onAnimatedSwitch = (ev: React.ChangeEvent<HTMLInputElement>) => {
-    setAnimated(ev.target.checked);
-    Globals.assign({ skipAnimation: !ev.target.checked });
+  const onAnimatedSwitch = () => {
+    Globals.assign({ skipAnimation: !animated });
+    setAnimated(!animated);
   };
 
   useEffect(() => {
@@ -126,16 +131,26 @@ export default function ApplicationBar() {
           </>
         ) : null}
         <Box flexGrow={1} />
-        <FormControlLabel
-          control={<Switch checked={animated} onChange={onAnimatedSwitch} />}
-          labelPlacement="start"
-          label="Animar"
-        />
-        <FormControlLabel
-          control={<Switch checked={config.isCreateEnabled} onChange={() => config.toggleCreationMode()} />}
-          labelPlacement="start"
-          label="Añadir naves"
-        />
+        <ToggleButtonGroup
+          value={config.creationMode}
+          exclusive
+          onChange={(_, value: "ships" | "asteroids" | null) => {
+            config.changeCreationMode(value);
+          }}
+        >
+          <ToggleButton value="ships" aria-label="left aligned" sx={{ p: 0.5 }} size="large">
+            <AddShipIcon selected={config.creationMode === "ships"} />
+          </ToggleButton>
+          <ToggleButton value="asteroids" aria-label="asteroids" sx={{ p: 0.5 }} size="large" disabled>
+            <AddAsteroidIcon selected={config.creationMode === "asteroids"} />
+          </ToggleButton>
+        </ToggleButtonGroup>
+        <IconButton onClick={onAnimatedSwitch} color="inherit" sx={{ m: 1 }}>
+          {animated ? <StaticIcon /> : <AnimatedIcon />}
+        </IconButton>
+        <IconButton onClick={config.toggleColorMode} color="inherit">
+          {theme.palette.mode === "dark" ? <Brightness4Icon /> : <Brightness7Icon />}
+        </IconButton>
       </Toolbar>
     </AppBar>
   );

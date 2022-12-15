@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTheme } from "@mui/material";
-import { useAppBarHeight } from "./app-bar-height.hook";
+import { useAppBarHeight } from "../app/app-bar-height.hook";
 
 export function useWindowSize() {
   const theme = useTheme();

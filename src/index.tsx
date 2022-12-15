@@ -1,14 +1,13 @@
 import React, { useContext } from "react";
 import ReactDOM from "react-dom/client";
-import { CssBaseline, ThemeProvider } from "@mui/material";
 import { HexMap } from "./map/HexMap";
 import { MapForm } from "./map/MapForm";
-import { MapContext, MapProvider } from "./map/MapContext";
-import { ShipProvider } from "./ships/ShipContext";
-import ApplicationBar from "./utils/ApplicationBar";
+import { MapContext, MapProvider } from "./map/MapProvider";
+import { ShipProvider } from "./ships/ShipProvider";
+import ApplicationBar from "./app/ApplicationBar";
 import reportWebVitals from "./reportWebVitals";
-import { ConfigurationProvider } from "./utils/config.context";
-import { theme } from "./utils/theme";
+import { ConfigurationProvider } from "./app/ConfigProvider";
+import { ThemeProvider } from "./app/ThemeProvider";
 
 function AppBody() {
   const map = useContext(MapContext);
@@ -17,17 +16,16 @@ function AppBody() {
 
 function App() {
   return (
-    <ThemeProvider theme={theme}>
-      <CssBaseline />
-      <ConfigurationProvider>
+    <ConfigurationProvider>
+      <ThemeProvider>
         <MapProvider>
           <ShipProvider>
             <ApplicationBar />
             <AppBody />
           </ShipProvider>
         </MapProvider>
-      </ConfigurationProvider>
-    </ThemeProvider>
+      </ThemeProvider>
+    </ConfigurationProvider>
   );
 }
 

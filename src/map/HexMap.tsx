@@ -5,13 +5,13 @@ import { HexShips } from "./HexShips";
 import { MovementHexCell } from "./MovementHexCell";
 import { CancelMovementHexCell } from "./CancelMovementHexCell";
 import { HexButton } from "./HexButton";
-import { ShipContext } from "../ships/ShipContext";
-import { useHexMap } from "./hex-map.hook";
-import { useMapMovement } from "./hex-move.hook";
+import { ShipContext } from "../ships/ShipProvider";
+import { useHexMap } from "./hex-ship-movement.hook";
+import { useMapMovement } from "./hex-map-movevement.hook";
 import { ShipType } from "../ships/ship.types";
 import UpdateShipForm from "../ships/form/UpdateShipForm";
 import CreateShipForm from "../ships/form/CreateShipForm";
-import { useConfiguration } from "../utils/config.context";
+import { useConfiguration } from "../app/ConfigProvider";
 
 type SizeType = { x: number; y: number };
 
@@ -74,7 +74,7 @@ export const HexMap = () => {
           ? shipMoves.map(({ x, y, rotation, distance }) => (
               <HexButton key={`${x}_${y}`} x={x} y={y} onClick={() => onHexMoveSetPath(x, y, rotation, distance)} />
             ))
-          : config.isCreateEnabled
+          : config.creationMode === "ships"
           ? buttonPoints.map(({ i, j }) => (
               <HexButton key={`${i}_${j}`} x={i} y={j} onClick={() => onCellClicked(i, j)} />
             ))

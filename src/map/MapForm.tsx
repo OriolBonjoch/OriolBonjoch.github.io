@@ -4,9 +4,9 @@ import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Container from "@mui/material/Container";
 import { styled } from "@mui/material/styles";
-import { ShipContext } from "../ships/ShipContext";
-import { MapContext } from "./MapContext";
-import { useAppBarHeight } from "../utils/app-bar-height.hook";
+import { ShipContext } from "../ships/ShipProvider";
+import { MapContext } from "./MapProvider";
+import { useAppBarHeight } from "../app/app-bar-height.hook";
 
 const StyledContainer = styled(Container)(({ theme }) => {
   const height = useAppBarHeight(theme);

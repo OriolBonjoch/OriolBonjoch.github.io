@@ -1,7 +1,7 @@
 import { animated, useSpring } from "react-spring";
 import { Ship } from "../ships/Ship";
 import { ShipType } from "../ships/ship.types";
-import { calcCoords } from "./map.helper";
+import { calcCoords } from "../utils/mapper.helper";
 
 function getAnimatedPath(ship: ShipType) {
   const { x, y, nextMove } = ship;

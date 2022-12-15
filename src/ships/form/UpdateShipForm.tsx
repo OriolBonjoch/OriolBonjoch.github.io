@@ -8,7 +8,7 @@ import Switch from "@mui/material/Switch";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Container from "@mui/material/Container";
 import Stack from "@mui/material/Stack";
-import { ShipContext } from "../ShipContext";
+import { ShipContext } from "../ShipProvider";
 import { ShipType } from "../ship.types";
 import { MovementHelper } from "./MovementHelper";
 import { ShipFormPreview } from "./ShipFormPreview";

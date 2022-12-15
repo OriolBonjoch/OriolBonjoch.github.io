@@ -1,5 +1,5 @@
 import { useCallback, useContext, useState } from "react";
-import { ShipContext } from "../ships/ShipContext";
+import { ShipContext } from "../ships/ShipProvider";
 import { ShipType } from "../ships/ship.types";
 import { calculateAllMoves, calculatePenalty } from "../utils/move.hook";
 

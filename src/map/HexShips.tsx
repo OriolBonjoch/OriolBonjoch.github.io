@@ -1,6 +1,6 @@
 import { useContext, useEffect, useState } from "react";
 import { ShipType } from "../ships/ship.types";
-import { ShipContext } from "../ships/ShipContext";
+import { ShipContext } from "../ships/ShipProvider";
 import { HexAnimatedShip } from "./HexAnimatedShip";
 import { HexStaticShip } from "./HexStaticShip";
 

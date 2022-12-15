@@ -1,5 +1,5 @@
 import { styled } from "@mui/material/styles";
-import { calcCoords } from "../map/map.helper";
+import { calcCoords } from "../utils/mapper.helper";
 import { selectableShips } from "./ship-selection";
 
 const defaultColor = "#F44E3B";

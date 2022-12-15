@@ -1,5 +1,5 @@
 import { styled } from "@mui/material/styles";
-import { calcCoords } from "./map.helper";
+import { calcCoords } from "../utils/mapper.helper";
 
 type Props = {
   x: number;

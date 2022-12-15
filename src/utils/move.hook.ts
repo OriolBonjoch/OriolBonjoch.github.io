@@ -1,4 +1,4 @@
-import { calcCoords } from "../map/map.helper";
+import { calcCoords } from "./mapper.helper";
 
 const sqrt3 = Math.floor(1000 * Math.sqrt(3)) / 1000;
 

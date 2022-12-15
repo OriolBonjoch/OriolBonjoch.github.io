@@ -1,4 +1,4 @@
-import { calcCoords, halfsqrt3 } from "./map.helper";
+import { calcCoords, halfsqrt3 } from "../utils/mapper.helper";
 import { styled } from "@mui/material/styles";
 
 const StyledG = styled("g")(({ theme }) => {

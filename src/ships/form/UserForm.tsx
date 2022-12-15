@@ -10,7 +10,7 @@ import Badge from "@mui/material/Badge";
 import Typography from "@mui/material/Typography";
 import { ShipType } from "../ship.types";
 import { ShipFormPreview } from "./ShipFormPreview";
-import { ShipContext } from "../ShipContext";
+import { ShipContext } from "../ShipProvider";
 import { Ship } from "../Ship";
 import { Hex } from "../../map/Hex";
 
