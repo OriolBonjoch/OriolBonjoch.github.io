@@ -3,11 +3,11 @@ import { ShipType } from "../ships/ship.types";
 import { HexShipGhostMovement } from "./HexShipGhostMovement";
 
 export function HexStaticShip({ ship }: { ship: ShipType }) {
-  const { x, y, color, rotation } = ship;
+  const { x, y, color, texture, rotation } = ship;
   return (
     <>
       <HexShipGhostMovement key={ship.name} ship={ship} />
-      <Ship x={x} y={y} color={color} texture={color[0] === "#" ? undefined : color} rot={rotation} />
+      <Ship x={x} y={y} color={color} texture={texture} rot={rotation} />
     </>
   );
 }

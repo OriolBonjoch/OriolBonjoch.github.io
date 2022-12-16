@@ -10,6 +10,7 @@ type SavedPlay = {
     rotation: number;
     speed: number;
     color: string;
+    texture: string;
   }[];
   map: { x: number; y: number };
 };
@@ -26,7 +27,7 @@ export const usePersistence = (hideMenu: () => void) => {
 
     createMap(`${data.map.x}`);
     data.ships.forEach((s) => {
-      createShip(s.name, s.x, s.y, s.color, s.speed, 0, s.rotation);
+      createShip(s.name, s.x, s.y, s.color, s.texture, s.speed, 0, s.rotation);
     });
   }, [createMap, createShip, hideMenu]);
 

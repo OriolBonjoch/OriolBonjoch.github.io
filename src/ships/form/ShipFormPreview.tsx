@@ -5,7 +5,7 @@ import { Hex } from "../../map/Hex";
 
 type Props = {
   color: string;
-  texture?: string;
+  texture: string;
   rot: number;
   changeRotation?: (rot: number) => void;
 };

@@ -7,10 +7,19 @@ function useShips() {
   const [state, dispatch] = useReducer(shipReducer, { step: 0, ships: {} });
 
   const createShip = useCallback(
-    (name: string, x: number, y: number, color: string, speed: number, acceleration: number, rotation: number) => {
+    (
+      name: string,
+      x: number,
+      y: number,
+      color: string,
+      texture: string,
+      speed: number,
+      acceleration: number,
+      rotation: number
+    ) => {
       dispatch({
         type: "CREATE_SHIP",
-        payload: { name, x, y, color, acceleration, speed, rotation },
+        payload: { name, x, y, color, texture, acceleration, speed, rotation },
       } as ActionType);
     },
     []

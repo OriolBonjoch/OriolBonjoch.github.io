@@ -2,6 +2,7 @@ import { animated, useSpring } from "react-spring";
 import { Ship } from "../ships/Ship";
 import { ShipType } from "../ships/ship.types";
 import { calcCoords } from "../utils/mapper.helper";
+import { HexShipGhostMovement } from "./HexShipGhostMovement";
 
 function getAnimatedPath(ship: ShipType) {
   const { x, y, nextMove } = ship;
@@ -12,11 +13,11 @@ function getAnimatedPath(ship: ShipType) {
 }
 
 export function HexAnimatedShip({ ship, onFinish }: { ship: ShipType; onFinish: () => void }) {
-  const { color } = ship;
+  const { color, texture } = ship;
   const path = getAnimatedPath(ship);
 
   const { offsetDistance } = useSpring({
-    from: { offsetDistance: "0%" },
+    from: { scale: 1, offsetDistance: "0%" },
     to: { offsetDistance: "100%" },
     loop: false,
     config: { duration: 3000 },
@@ -25,8 +26,9 @@ export function HexAnimatedShip({ ship, onFinish }: { ship: ShipType; onFinish: 
 
   return (
     <>
+      <HexShipGhostMovement key={ship.name} ship={ship} />
       <animated.g style={{ offsetPath: `path("${path}")`, offsetDistance }}>
-        <Ship x={0} y={0} rot={6} color={color} texture={color[0] === "#" ? undefined : color} />
+        <Ship x={0} y={0} rot={6} color={color} texture={texture} />
       </animated.g>
     </>
   );

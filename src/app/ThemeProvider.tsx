@@ -25,16 +25,19 @@ export const ThemeProvider = ({ children }: PropsWithChildren) => {
           hex: {
             main: "#c0c0c0",
             dark: "#c0c0c0",
+            // dark: "#121212",
             light: "#fff",
           },
           hexStroke: {
             main: "#202020",
-            dark: "#000000ee",
+            dark: "#202020",
+            // dark: "#363636",
             light: "#ccc",
           },
           ghost: {
-            main: "#333333",
+            main: "#999999",
             dark: "#999999",
+            // dark: "#333333",
             light: "#fade91",
           },
           mode: config.mode,

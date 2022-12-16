@@ -34,7 +34,16 @@ export type DeleteAction = {
 
 export type CreateAction = {
   type: "CREATE_SHIP";
-  payload: { name: string; x: number; y: number; rotation: number; speed: number; acceleration: number; color: string };
+  payload: {
+    name: string;
+    x: number;
+    y: number;
+    rotation: number;
+    speed: number;
+    acceleration: number;
+    color: string;
+    texture: string;
+  };
 };
 
 export type ActionType =
@@ -67,14 +76,7 @@ export type StateType = {
   step: number;
   ships: Record<
     string,
-    {
-      x: number;
-      y: number;
-      rotation: number;
-      speed: number;
-      acceleration: number;
-      color: string;
-      nextMove: MoveType;
+    Omit<ShipType, "name"> & {
       history: HistoryType[];
     }
   >;
@@ -88,5 +90,6 @@ export type ShipType = {
   speed: number;
   acceleration: number;
   color: string;
+  texture: string;
   nextMove: MoveType;
 };

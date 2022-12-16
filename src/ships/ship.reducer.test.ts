@@ -9,7 +9,8 @@ describe("moveShipReduce", () => {
         "Nave #793": {
           x: 3,
           y: 2,
-          color: "ship8",
+          color: "#ff0",
+          texture: "ship8",
           acceleration: 2,
           speed: 20,
           rotation: 6,
@@ -47,7 +48,8 @@ describe("moveShipReduce", () => {
         "Nave #793": {
           x: 3,
           y: 2,
-          color: "ship8",
+          color: "#ff0",
+          texture: "ship8",
           acceleration: 2,
           speed: 20,
           rotation: 6,
@@ -76,7 +78,8 @@ describe("moveShipReduce", () => {
         "Nave #194": {
           x: 6,
           y: 6,
-          color: "ship4",
+          color: "#ff0",
+          texture: "ship4",
           acceleration: 2,
           speed: 21,
           rotation: -6,
@@ -113,7 +116,8 @@ describe("moveShipReduce", () => {
         "Nave #194": {
           x: 6,
           y: 6,
-          color: "ship4",
+          color: "#ff0",
+          texture: "ship4",
           acceleration: 2,
           speed: 21,
           rotation: -6,
@@ -149,7 +153,8 @@ describe("moveShipReduce", () => {
         Silex: {
           x: 3,
           y: 1,
-          color: "ship7",
+          color: "#ff0",
+          texture: "ship4",
           acceleration: 2,
           speed: 9,
           rotation: 6,
@@ -187,7 +192,8 @@ describe("moveShipReduce", () => {
         Silex: {
           x: 3,
           y: 1,
-          color: "ship7",
+          color: "#ff0",
+          texture: "ship4",
           acceleration: 2,
           speed: 9,
           rotation: 6,
@@ -226,7 +232,8 @@ describe("moveShipReduce", () => {
         Silex: {
           x: 3,
           y: 1,
-          color: "ship7",
+          color: "#ff0",
+          texture: "ship4",
           acceleration: 2,
           speed: 9,
           rotation: 6,
@@ -255,7 +262,8 @@ describe("moveShipReduce", () => {
         "Nave #280": {
           x: 1,
           y: 4,
-          color: "#F44E3B",
+          color: "#ff0",
+          texture: "ship4",
           acceleration: 2,
           speed: 4,
           rotation: 6,
@@ -283,7 +291,8 @@ describe("moveShipReduce", () => {
         "Nave #280": {
           x: 5,
           y: 4,
-          color: "#F44E3B",
+          color: "#ff0",
+          texture: "ship4",
           acceleration: 2,
           speed: 4,
           rotation: 6,
@@ -312,7 +321,8 @@ describe("moveShipReduce", () => {
         "Nave #280": {
           x: 5,
           y: 4,
-          color: "#F44E3B",
+          color: "#ff0",
+          texture: "ship4",
           acceleration: 2,
           speed: 4,
           rotation: 6,
@@ -340,7 +350,8 @@ describe("moveShipReduce", () => {
         "Nave #280": {
           x: 3,
           y: 2,
-          color: "#F44E3B",
+          color: "#ff0",
+          texture: "ship4",
           acceleration: 2,
           speed: 3, // + 1 acc - 2 penalties
           rotation: 2,

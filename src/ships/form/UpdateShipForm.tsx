@@ -102,7 +102,7 @@ export default function UpdateShipForm(props: {
               <ShipFormPreview
                 rot={ship.rotation}
                 color={ship.color}
-                texture={ship.color === "#" ? undefined : ship.color}
+                texture={ship.texture}
                 changeRotation={(r) => updateShip(shipname, "rotation", r)}
               />
               <TextField
@@ -118,7 +118,7 @@ export default function UpdateShipForm(props: {
                 InputProps={{ inputProps: { min: 0, step: 1 } }}
                 onChange={(ev) => updateShip(shipname, "speed", parseInt(ev.target.value))}
               />
-              <MovementHelper color={ship.color} rotation={ship.rotation} />
+              <MovementHelper color={ship.color} rotation={ship.rotation} texture={ship.texture} />
               <Button
                 color="error"
                 variant="contained"

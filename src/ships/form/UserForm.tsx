@@ -21,13 +21,13 @@ export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: (
 
   return (
     <>
-      <ShipFormPreview rot={ship.rotation} color={ship.color} texture={ship.color === "#" ? undefined : ship.color} />
+      <ShipFormPreview rot={ship.rotation} color={ship.color} texture={ship.texture} />
       <TextField
         label="Acceleración"
         type="number"
         InputProps={{
           inputProps: {
-            min: -ship.acceleration,
+            min: Math.max(-ship.speed, -ship.acceleration),
             max: ship.acceleration,
             step: 1,
           },
@@ -69,7 +69,7 @@ export const UserForm = ({ ship, onMoveStart }: { ship: ShipType; onMoveStart: (
           ))}
         </TableBody>
       </Table>
-      <Button variant="contained" onClick={onMoveStart}>
+      <Button variant="contained" onClick={onMoveStart} disabled={finalSpeed <= 0}>
         Mover en mapa
       </Button>
     </>

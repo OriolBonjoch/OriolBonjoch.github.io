@@ -31,20 +31,22 @@ const SvgHexLetter = ({ letter, up, rotation }: Props) => {
   );
 };
 
-export const MovementHelper = ({ color, rotation }: { color?: string; rotation?: number }) => {
+export const MovementHelper = ({
+  color,
+  rotation,
+  texture,
+}: {
+  color?: string;
+  rotation?: number;
+  texture?: string;
+}) => {
   return (
     <svg viewBox="-3 -3 6 6">
       <SvgHexLetter letter="Q" up rotation={-60} />
       <SvgHexLetter letter="W" up />
       <SvgHexLetter letter="E" up rotation={60} />
       <Hex withStroke />
-      <Ship
-        x={0}
-        y={0}
-        color={color || "#fff"}
-        texture={color && color[0] === "#" ? undefined : color}
-        rot={rotation ?? 6}
-      />
+      <Ship x={0} y={0} color={color || "#fff"} texture={texture || "Corsair"} rot={rotation ?? 6} />
       <SvgHexLetter letter="A" rotation={60} />
       <SvgHexLetter letter="S" />
       <SvgHexLetter letter="D" rotation={-60} />

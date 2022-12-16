@@ -14,6 +14,7 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import Tooltip from "@mui/material/Tooltip";
 import { useTheme } from "@mui/material/styles";
 
 import { MapContext } from "../map/MapProvider";
@@ -68,6 +69,10 @@ export default function ApplicationBar() {
   const onAnimatedSwitch = () => {
     Globals.assign({ skipAnimation: !animated });
     setAnimated(!animated);
+  };
+
+  const onChangeCreation = (_: unknown, value: "ships" | "asteroids" | null) => {
+    config.changeCreationMode(value);
   };
 
   useEffect(() => {
@@ -131,26 +136,27 @@ export default function ApplicationBar() {
           </>
         ) : null}
         <Box flexGrow={1} />
-        <ToggleButtonGroup
-          value={config.creationMode}
-          exclusive
-          onChange={(_, value: "ships" | "asteroids" | null) => {
-            config.changeCreationMode(value);
-          }}
-        >
-          <ToggleButton value="ships" aria-label="left aligned" sx={{ p: 0.5 }} size="large">
-            <AddShipIcon selected={config.creationMode === "ships"} />
-          </ToggleButton>
+
+        <ToggleButtonGroup value={config.creationMode} exclusive onChange={onChangeCreation}>
+          <Tooltip disableFocusListener describeChild title="Añade los botones al mapa para crear naves">
+            <ToggleButton value="ships" aria-label="left aligned" sx={{ p: 0.5 }} size="large">
+              <AddShipIcon selected={config.creationMode === "ships"} />
+            </ToggleButton>
+          </Tooltip>
           <ToggleButton value="asteroids" aria-label="asteroids" sx={{ p: 0.5 }} size="large" disabled>
             <AddAsteroidIcon selected={config.creationMode === "asteroids"} />
           </ToggleButton>
         </ToggleButtonGroup>
-        <IconButton onClick={onAnimatedSwitch} color="inherit" sx={{ m: 1 }}>
-          {animated ? <StaticIcon /> : <AnimatedIcon />}
-        </IconButton>
-        <IconButton onClick={config.toggleColorMode} color="inherit">
-          {theme.palette.mode === "dark" ? <Brightness4Icon /> : <Brightness7Icon />}
-        </IconButton>
+        <Tooltip disableFocusListener describeChild title="Habilita / deshabilita todas las animaciones">
+          <IconButton onClick={onAnimatedSwitch} color="inherit" sx={{ m: 1 }}>
+            {animated ? <StaticIcon /> : <AnimatedIcon />}
+          </IconButton>
+        </Tooltip>
+        <Tooltip disableFocusListener describeChild title="Alterna claros / oscuros">
+          <IconButton onClick={config.toggleColorMode} color="inherit">
+            {theme.palette.mode === "dark" ? <Brightness4Icon /> : <Brightness7Icon />}
+          </IconButton>
+        </Tooltip>
       </Toolbar>
     </AppBar>
   );

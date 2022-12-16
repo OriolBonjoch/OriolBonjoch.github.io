@@ -29,6 +29,7 @@
     "start": "react-scripts start",
     "build": "react-scripts build & rm -R docs & mv build docs",
     "build-local": "react-scripts build",
+    "build-ships": "npx @svgr/cli --typescript --ignore-existing --expand-props none --svg-props \"width=1.5,height=1.5,x=-0.75,y=-0.75\" --out-dir src/ships/assets/ -- ships/output",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
@@ -51,6 +52,7 @@
     ]
   },
   "devDependencies": {
+    "@svgr/cli": "^6.5.1",
     "prettier": "^2.8.0"
   }
 }
