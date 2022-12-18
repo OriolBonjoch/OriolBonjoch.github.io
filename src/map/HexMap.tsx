@@ -12,6 +12,8 @@ import { ShipType } from "../ships/ship.types";
 import UpdateShipForm from "../ships/form/UpdateShipForm";
 import CreateShipForm from "../ships/form/CreateShipForm";
 import { useConfiguration } from "../app/ConfigProvider";
+import { useAsteroids } from "./AsteroidProvider";
+import { HexAsteroidField } from "./HexAsteroidField";
 
 type SizeType = { x: number; y: number };
 
@@ -35,6 +37,7 @@ export const HexMap = () => {
   const [createShip, setCreateShip] = useState<SizeType | null>(null);
   const [updateShip, setUpdateShip] = useState<ShipType | null>(null);
   const config = useConfiguration();
+  const { asteroids, toggleAsteroid } = useAsteroids();
 
   const { shipMoves, shipMoved, onHexMoveStart, onHexMoveSetPath, onHexMoveCancel } = useHexMap();
   const { buttonPoints, backgroundBox, animatedViewBox } = useMapMovement();
@@ -43,8 +46,10 @@ export const HexMap = () => {
     const ship = ships.find((s) => s.x === x && s.y === y);
     if (ship) {
       setUpdateShip(ship);
-    } else {
+    } else if (config.creationMode === "ships") {
       setCreateShip({ x, y });
+    } else if (config.creationMode === "asteroids") {
+      toggleAsteroid(x, y);
     }
   };
 
@@ -58,6 +63,9 @@ export const HexMap = () => {
         </defs>
         {/* BACKGROUND CELLS */}
         <HexBackground {...backgroundBox} />
+        {asteroids.map((asteroid) => (
+          <HexAsteroidField key={`${asteroid.x}_${asteroid.y}`} {...asteroid} />
+        ))}
         {/* SHIP MOVEMENT CELLS */}
         {shipMoved ? <CancelMovementHexCell x={shipMoved.x} y={shipMoved.y} /> : null}
         {shipMoves.map((pointMove) => {
@@ -74,7 +82,7 @@ export const HexMap = () => {
           ? shipMoves.map(({ x, y, rotation, distance }) => (
               <HexButton key={`${x}_${y}`} x={x} y={y} onClick={() => onHexMoveSetPath(x, y, rotation, distance)} />
             ))
-          : config.creationMode === "ships"
+          : config.creationMode !== null
           ? buttonPoints.map(({ i, j }) => (
               <HexButton key={`${i}_${j}`} x={i} y={j} onClick={() => onCellClicked(i, j)} />
             ))

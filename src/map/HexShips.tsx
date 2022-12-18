@@ -12,11 +12,11 @@ export function HexShips({ ships }: { ships: ShipType[] }) {
   const [pendingAnimations, setPendingAnimations] = useState(NO_ANIMATIONS);
 
   useEffect(() => {
-    if (step !== currentStep) {
-      setPendingAnimations(ships.length);
-      setCurrentStep(step);
-    }
-  }, [currentStep, setPendingAnimations, ships.length, step]);
+    if (step === currentStep) return;
+
+    setPendingAnimations(ships.length);
+    setCurrentStep(step);
+  }, [currentStep, setPendingAnimations, ships, ships.length, step]);
 
   useEffect(() => {
     if (pendingAnimations !== 0) return;
@@ -31,7 +31,9 @@ export function HexShips({ ships }: { ships: ShipType[] }) {
         isAnimating ? (
           <HexAnimatedShip key={ship.name} ship={ship} onFinish={() => setPendingAnimations((prev) => prev - 1)} />
         ) : (
-          <HexStaticShip key={ship.name} ship={ship} />
+          <>
+            <HexStaticShip key={ship.name} ship={ship} />
+          </>
         )
       )}
     </>

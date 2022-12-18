@@ -143,13 +143,13 @@ export default function ApplicationBar() {
               <AddShipIcon selected={config.creationMode === "ships"} />
             </ToggleButton>
           </Tooltip>
-          <ToggleButton value="asteroids" aria-label="asteroids" sx={{ p: 0.5 }} size="large" disabled>
+          <ToggleButton value="asteroids" aria-label="asteroids" sx={{ p: 0.5 }} size="large">
             <AddAsteroidIcon selected={config.creationMode === "asteroids"} />
           </ToggleButton>
         </ToggleButtonGroup>
         <Tooltip disableFocusListener describeChild title="Habilita / deshabilita todas las animaciones">
           <IconButton onClick={onAnimatedSwitch} color="inherit" sx={{ m: 1 }}>
-            {animated ? <StaticIcon /> : <AnimatedIcon />}
+            {animated ? <AnimatedIcon /> : <StaticIcon />}
           </IconButton>
         </Tooltip>
         <Tooltip disableFocusListener describeChild title="Alterna claros / oscuros">

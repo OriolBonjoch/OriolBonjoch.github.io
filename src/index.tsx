@@ -8,6 +8,7 @@ import ApplicationBar from "./app/ApplicationBar";
 import reportWebVitals from "./reportWebVitals";
 import { ConfigurationProvider } from "./app/ConfigProvider";
 import { ThemeProvider } from "./app/ThemeProvider";
+import { AsteroidProvider } from "./map/AsteroidProvider";
 
 function AppBody() {
   const map = useContext(MapContext);
@@ -19,10 +20,12 @@ function App() {
     <ConfigurationProvider>
       <ThemeProvider>
         <MapProvider>
-          <ShipProvider>
-            <ApplicationBar />
-            <AppBody />
-          </ShipProvider>
+          <AsteroidProvider>
+            <ShipProvider>
+              <ApplicationBar />
+              <AppBody />
+            </ShipProvider>
+          </AsteroidProvider>
         </MapProvider>
       </ThemeProvider>
     </ConfigurationProvider>

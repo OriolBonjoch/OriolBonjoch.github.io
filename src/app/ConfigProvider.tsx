@@ -9,7 +9,7 @@ const defaultConfiguration = {
   changeCreationMode: (_: CreationMode) => {},
 };
 
-export const ConfigurationContext = createContext(defaultConfiguration);
+const ConfigurationContext = createContext(defaultConfiguration);
 
 export const ConfigurationProvider = ({ children }: PropsWithChildren) => {
   const [mode, setMode] = useState<PaletteMode>(defaultConfiguration.mode);
