@@ -64,10 +64,15 @@ function useShips() {
     dispatch({ type: "MOVE" });
   }, []);
 
+  const cancelShipMovement = useCallback((name: string) => {
+    dispatch({ type: "CANCEL_MOVE", payload: { name } });
+  }, []);
+
   return {
     step: state.step,
     ships: Object.entries(state.ships).map(([name, ship]) => ({ name, ...ship })),
     createShip,
+    cancelShipMovement,
     deleteShip,
     updateShip,
     prepareShip,
@@ -83,6 +88,7 @@ export const ShipContext = createContext<ReturnType<typeof useShips>>({
   createShip: () => null,
   deleteShip: () => null,
   prepareShip: () => null,
+  cancelShipMovement: () => null,
   updateAcceleration: () => null,
   applyMovement: () => null,
   moveShip: () => null,

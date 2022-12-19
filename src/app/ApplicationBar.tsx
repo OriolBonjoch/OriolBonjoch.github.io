@@ -14,6 +14,7 @@ import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
 import Brightness4Icon from "@mui/icons-material/Brightness4";
 import Brightness7Icon from "@mui/icons-material/Brightness7";
+import Block from "@mui/icons-material/Block";
 import Tooltip from "@mui/material/Tooltip";
 import { useTheme } from "@mui/material/styles";
 
@@ -23,12 +24,14 @@ import { Globals } from "react-spring";
 import { usePersistence } from "../utils/persistence.hook";
 import { useConfiguration } from "./ConfigProvider";
 import { AddAsteroidIcon, AddShipIcon, AnimatedIcon, StaticIcon } from "./ApplicationBarIcons";
+import { useAsteroids } from "../map/AsteroidProvider";
 
 export default function ApplicationBar() {
   const { size, isCreated, createMap, changeZoom, dragToShip } = useContext(MapContext);
   const { ships, moveShip } = useContext(ShipContext);
   const config = useConfiguration();
   const theme = useTheme();
+  const { asteroids } = useAsteroids();
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [anchorMenuFocus, setAnchorMenuFocus] = useState<HTMLElement>();
@@ -79,6 +82,12 @@ export default function ApplicationBar() {
     changeZoom(size.x);
   }, [changeZoom, size.x]);
 
+  const commonProps = {
+    disabled: !isCreated || !ships.length,
+    color: "inherit",
+    sx: { m: 1 },
+  } as const;
+
   return (
     <AppBar position="static">
       <Toolbar>
@@ -106,54 +115,54 @@ export default function ApplicationBar() {
           {isCreated ? <MenuItem onClick={save}>Guardar</MenuItem> : null}
           <MenuItem onClick={load}>Cargar</MenuItem>
         </Menu>
-        {isCreated && ships.length ? (
-          <>
-            <Button color="inherit" startIcon={<PlayArrow />} onClick={startMovement}>
-              Mover Todo
-            </Button>
-            <Button
-              color="inherit"
-              startIcon={<CenterFocusStrongIcon />}
-              onClick={(ev) => setAnchorMenuFocus(ev.currentTarget)}
-            >
-              Centrar
-            </Button>
-            <Menu
-              id="menu-focus"
-              anchorEl={anchorMenuFocus}
-              anchorOrigin={{ vertical: "top", horizontal: "right" }}
-              keepMounted
-              transformOrigin={{ vertical: "top", horizontal: "right" }}
-              open={!!anchorMenuFocus}
-              onClose={() => setAnchorMenuFocus(undefined)}
-            >
-              {ships.map((s) => (
-                <MenuItem key={s.name} onClick={() => dragToShip([s.x, s.y])}>
-                  <Typography textAlign="center">{s.name}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </>
-        ) : null}
+        <IconButton onClick={startMovement} {...commonProps}>
+          <PlayArrow />
+        </IconButton>
         <Box flexGrow={1} />
-
-        <ToggleButtonGroup value={config.creationMode} exclusive onChange={onChangeCreation}>
+        <Tooltip disableFocusListener describeChild title="Centra el mapa en la nave seleccionada">
+          <IconButton onClick={(ev) => setAnchorMenuFocus(ev.currentTarget)} {...commonProps}>
+            <CenterFocusStrongIcon />
+          </IconButton>
+        </Tooltip>
+        <Menu
+          id="menu-focus"
+          anchorEl={anchorMenuFocus}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+          keepMounted
+          transformOrigin={{ vertical: "top", horizontal: "right" }}
+          open={!!anchorMenuFocus}
+          onClose={() => setAnchorMenuFocus(undefined)}
+        >
+          {ships.map((s) => (
+            <MenuItem key={s.name} onClick={() => dragToShip([s.x, s.y])}>
+              <Typography textAlign="center">{s.name}</Typography>
+            </MenuItem>
+          ))}
+        </Menu>
+        <ToggleButtonGroup value={config.creationMode} exclusive onChange={onChangeCreation} sx={{ m: 1 }}>
           <Tooltip disableFocusListener describeChild title="Añade los botones al mapa para crear naves">
-            <ToggleButton value="ships" aria-label="left aligned" sx={{ p: 0.5 }} size="large">
+            <ToggleButton value="ships" aria-label="left aligned" sx={{ p: 0.5 }} size="large" disabled={!isCreated}>
               <AddShipIcon selected={config.creationMode === "ships"} />
             </ToggleButton>
           </Tooltip>
-          <ToggleButton value="asteroids" aria-label="asteroids" sx={{ p: 0.5 }} size="large">
-            <AddAsteroidIcon selected={config.creationMode === "asteroids"} />
-          </ToggleButton>
+          <Tooltip disableFocusListener describeChild title="Añade los botones al mapa para crear asteroides">
+            <ToggleButton value="asteroids" aria-label="asteroids" sx={{ p: 0.5 }} size="large" disabled={!isCreated}>
+              <AddAsteroidIcon selected={config.creationMode === "asteroids"} />
+            </ToggleButton>
+          </Tooltip>
         </ToggleButtonGroup>
+        <Tooltip disableFocusListener describeChild title="Habilita /deshabilita choque de asteroides">
+          <IconButton onClick={config.toggleBlock} {...commonProps} disabled={!isCreated || !asteroids.length}>
+            <Block opacity={config.isBlockEnabled ? 1 : 0.3} />
+          </IconButton>
+        </Tooltip>
         <Tooltip disableFocusListener describeChild title="Habilita / deshabilita todas las animaciones">
-          <IconButton onClick={onAnimatedSwitch} color="inherit" sx={{ m: 1 }}>
+          <IconButton onClick={onAnimatedSwitch} {...commonProps}>
             {animated ? <AnimatedIcon /> : <StaticIcon />}
           </IconButton>
         </Tooltip>
         <Tooltip disableFocusListener describeChild title="Alterna claros / oscuros">
-          <IconButton onClick={config.toggleColorMode} color="inherit">
+          <IconButton onClick={config.toggleColorMode} color="inherit" sx={{ m: 1 }}>
             {theme.palette.mode === "dark" ? <Brightness4Icon /> : <Brightness7Icon />}
           </IconButton>
         </Tooltip>

@@ -8,6 +8,7 @@ import {
   PrepareMoveAction,
   PrepareAccelerationMoveAction,
   StateType,
+  CancelMoveAction,
 } from "./ship.types";
 
 function defaultMovement(ship: { x: number; y: number; speed: number; rotation: number }) {
@@ -126,6 +127,21 @@ export function changeAccelerationShipReduce(state: StateType, action: PrepareAc
   };
 }
 
+function cancelShipMoveReduce(state: StateType, action: CancelMoveAction) {
+  const { name } = action.payload;
+  const ship = state.ships[name];
+  return {
+    ...state,
+    ships: {
+      ...state.ships,
+      [name]: {
+        ...ship,
+        nextMove: defaultMovement(ship),
+      },
+    },
+  };
+}
+
 export function prepareShipReduce(state: StateType, action: PrepareMoveAction) {
   const ship = state.ships[action.payload.name];
   if (!ship) return state;
@@ -192,6 +208,8 @@ export function shipReducer(state: StateType, action: ActionType): StateType {
       return updateShipReduce(state, action);
     case "PREPARE_ACCELERATION_MOVE":
       return changeAccelerationShipReduce(state, action);
+    case "CANCEL_MOVE":
+      return cancelShipMoveReduce(state, action);
     case "PREPARE_MOVE":
       return prepareShipReduce(state, action);
     case "MOVE":

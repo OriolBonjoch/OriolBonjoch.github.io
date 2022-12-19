@@ -8,6 +8,11 @@ export type PrepareAccelerationMoveAction = {
   payload: { name: string; acceleration: number };
 };
 
+export type CancelMoveAction = {
+  type: "CANCEL_MOVE";
+  payload: { name: string };
+};
+
 export type PrepareMoveAction = {
   type: "PREPARE_MOVE";
   payload: {
@@ -49,6 +54,7 @@ export type CreateAction = {
 export type ActionType =
   | FreeAction
   | PrepareAccelerationMoveAction
+  | CancelMoveAction
   | PrepareMoveAction
   | StartMovementAction
   | MoveAction

@@ -1,7 +1,9 @@
-import { useCallback, useContext, useState } from "react";
+import { useCallback, useContext, useMemo, useState } from "react";
 import { ShipContext } from "../ships/ShipProvider";
 import { ShipType } from "../ships/ship.types";
 import { calculateAllMoves, calculatePenalty } from "../utils/move.hook";
+import { useAsteroids } from "./AsteroidProvider";
+import { useConfiguration } from "../app/ConfigProvider";
 
 type MoveType = {
   x: number;
@@ -23,24 +25,44 @@ export const useHexMap = function () {
   const [shipMoved, setShipMoved] = useState<ShipMovedType | null>(null);
   const [shipMoves, setShipMoves] = useState<MoveType[]>([]);
   const [isFirstMovement, setIsFirstMovement] = useState(false);
-  const { ships, prepareShip } = useContext(ShipContext);
-
-  const onHexMoveStart = useCallback((ship: ShipType) => {
-    const acceleration = ship.nextMove.acceleration || 0;
-    const moves: MoveType[] = calculateAllMoves(ship.x, ship.y, ship.speed + acceleration, ship.rotation).map(
-      ({ x, y, rotation, isValid, acceleration, distance }) =>
-        ({ name: ship.name, x, y, rotation, text: `${distance}`, isValid, distance } as MoveType)
-    );
-
-    setShipMoves(moves);
-    setShipMoved(ship);
-    setIsFirstMovement(true);
-  }, []);
+  const { ships, prepareShip, cancelShipMovement } = useContext(ShipContext);
+  const { isBlockEnabled } = useConfiguration();
+  const { asteroids } = useAsteroids();
 
   const onHexMoveCancel = useCallback(() => {
+    if (shipMoved?.name) {
+      cancelShipMovement(shipMoved.name);
+    }
+
     setShipMoves([]);
     setShipMoved(null);
-  }, []);
+  }, [cancelShipMovement, shipMoved?.name]);
+
+  const blockers = useMemo(() => {
+    onHexMoveCancel();
+    return isBlockEnabled ? asteroids : [];
+  }, [asteroids, isBlockEnabled, onHexMoveCancel]);
+
+  const onHexMoveStart = useCallback(
+    (ship: ShipType) => {
+      const acceleration = ship.nextMove.acceleration || 0;
+      const moves: MoveType[] = calculateAllMoves(
+        ship.x,
+        ship.y,
+        ship.speed + acceleration,
+        ship.rotation,
+        blockers
+      ).map(
+        ({ x, y, rotation, isValid, distance }) =>
+          ({ name: ship.name, x, y, rotation, text: `${distance}`, isValid, distance } as MoveType)
+      );
+
+      setShipMoves(moves);
+      setShipMoved(ship);
+      setIsFirstMovement(true);
+    },
+    [blockers]
+  );
 
   const onHexMoveSetPath = useCallback(
     (x: number, y: number, rotation: number, distance: number) => {
@@ -59,11 +81,12 @@ export const useHexMap = function () {
 
       prepareShip(shipMoved.name, x, y, rotation, isFirstMovement);
       if (distance + penalty >= pendingDistance) {
-        onHexMoveCancel();
+        setShipMoves([]);
+        setShipMoved(null);
         return;
       }
 
-      const moves: MoveType[] = calculateAllMoves(x, y, pendingDistance - distance - penalty, rotation).map(
+      const moves: MoveType[] = calculateAllMoves(x, y, pendingDistance - distance - penalty, rotation, blockers).map(
         ({ x, y, rotation, isValid, distance }) =>
           ({ name: shipMoved.name, x, y, rotation, text: `${distance}`, isValid, distance } as MoveType)
       );
@@ -72,7 +95,7 @@ export const useHexMap = function () {
       setShipMoved((prev) => (prev ? { ...prev, x, y } : null));
       if (isFirstMovement) setIsFirstMovement(false);
     },
-    [isFirstMovement, onHexMoveCancel, prepareShip, shipMoved, ships]
+    [blockers, isFirstMovement, prepareShip, shipMoved, ships]
   );
 
   return {

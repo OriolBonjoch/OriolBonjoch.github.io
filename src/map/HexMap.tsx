@@ -15,7 +15,7 @@ import { useConfiguration } from "../app/ConfigProvider";
 import { useAsteroids } from "./AsteroidProvider";
 import { HexAsteroidField } from "./HexAsteroidField";
 
-type SizeType = { x: number; y: number };
+type CoordType = { x: number; y: number };
 
 const HexMapSvg = styled(animated.svg)(({ theme }) => {
   const fill = theme.palette.hex[theme.palette.mode];
@@ -34,7 +34,7 @@ const HexBackground = styled("rect")({
 
 export const HexMap = () => {
   const { ships } = useContext(ShipContext);
-  const [createShip, setCreateShip] = useState<SizeType | null>(null);
+  const [createShip, setCreateShip] = useState<CoordType | null>(null);
   const [updateShip, setUpdateShip] = useState<ShipType | null>(null);
   const config = useConfiguration();
   const { asteroids, toggleAsteroid } = useAsteroids();

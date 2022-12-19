@@ -1,5 +1,7 @@
 import { calcCoords } from "./mapper.helper";
 
+type CoordType = { x: number; y: number };
+
 const sqrt3 = Math.floor(1000 * Math.sqrt(3)) / 1000;
 
 export function calcNextPoint(x: number, y: number, rotation: number): [number, number][] {
@@ -103,23 +105,30 @@ export function calculateAllMoves(
   x: number,
   y: number,
   speed: number, // speed + acceleration - penalties - distance
-  rotation: number
+  rotation: number,
+  blockers: CoordType[] = []
 ) {
   const allMoves = [...Array(12)].flatMap((_, newRotation) => {
     const moves: MoveType[] = [];
     const maxDistance = calculateSpeed(speed, rotation, newRotation);
+    const blockedPoints = blockers.map(({ x, y }) => `${x}_${y}`);
     for (let dist = newRotation % 2 || speed < 2 ? 1 : 2; dist <= maxDistance; dist++) {
-      moves.push(
-        ...calculateMoves(x, y, dist, newRotation).map(([x, y]) => ({
-          id: `${x}-${y}`,
-          x,
-          y,
-          rotation: newRotation,
-          acceleration: 0, // to remove.
-          isValid: dist === maxDistance, // to remove/rename to final.
-          distance: dist,
-        }))
-      );
+      const pathMoves = calculateMoves(x, y, dist, newRotation).map(([x, y]) => ({
+        id: `${x}_${y}`,
+        x,
+        y,
+        rotation: newRotation,
+        acceleration: 0, // to remove.
+        isValid: dist === maxDistance, // to remove/rename to final.
+        distance: dist,
+      }));
+
+      const available = pathMoves.filter(({ id }) => !blockedPoints.includes(id));
+      if (available.length) {
+        moves.push(...available);
+      } else {
+        return moves;
+      }
     }
 
     return moves;
