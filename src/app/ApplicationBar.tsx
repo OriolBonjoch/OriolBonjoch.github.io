@@ -156,16 +156,16 @@ export default function ApplicationBar() {
           ))}
         </Menu>
         <ToggleButtonGroup value={config.creationMode} exclusive onChange={onChangeCreation} sx={{ m: 1 }}>
-          <TooltipWrapper title="Añade los botones al mapa para crear naves" disabled={!isCreated}>
+          <Tooltip disableFocusListener describeChild title="Añade los botones al mapa para crear naves">
             <ToggleButton value="ships" sx={{ p: 0.5 }} size="large" disabled={!isCreated}>
               <AddShipIcon selected={isCreated && config.creationMode === "ships"} />
             </ToggleButton>
-          </TooltipWrapper>
-          <TooltipWrapper title="Añade los botones al mapa para crear asteroides" disabled={!isCreated}>
+          </Tooltip>
+          <Tooltip disableFocusListener describeChild title="Añade los botones al mapa para crear asteroides">
             <ToggleButton value="asteroids" sx={{ p: 0.5 }} size="large" disabled={!isCreated}>
               <AddAsteroidIcon selected={isCreated && config.creationMode === "asteroids"} />
             </ToggleButton>
-          </TooltipWrapper>
+          </Tooltip>
         </ToggleButtonGroup>
         <TooltipWrapper title="Habilita /deshabilita choque de asteroides" disabled={!isCreated || !asteroids.length}>
           <IconButton onClick={config.toggleBlock} {...commonProps} disabled={!isCreated || !asteroids.length}>
@@ -174,7 +174,7 @@ export default function ApplicationBar() {
         </TooltipWrapper>
         <TooltipWrapper title="Habilita / deshabilita todas las animaciones" disabled={commonProps.disabled}>
           <IconButton onClick={onAnimatedSwitch} {...commonProps}>
-            {animated ? <AnimatedIcon /> : <StaticIcon />}
+            {animated ? <StaticIcon /> : <AnimatedIcon />}
           </IconButton>
         </TooltipWrapper>
         <TooltipWrapper title="Alterna claros / oscuros" disabled={commonProps.disabled}>
