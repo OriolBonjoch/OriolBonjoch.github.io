@@ -31,9 +31,7 @@ export function HexShips({ ships }: { ships: ShipType[] }) {
         isAnimating ? (
           <HexAnimatedShip key={ship.name} ship={ship} onFinish={() => setPendingAnimations((prev) => prev - 1)} />
         ) : (
-          <>
-            <HexStaticShip key={ship.name} ship={ship} />
-          </>
+          <HexStaticShip key={ship.name} ship={ship} />
         )
       )}
     </>

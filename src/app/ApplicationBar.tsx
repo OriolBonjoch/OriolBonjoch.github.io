@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import React, { ReactElement, useCallback, useContext, useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Toolbar from "@mui/material/Toolbar";
 import PlayArrow from "@mui/icons-material/PlayArrow";
@@ -8,7 +8,6 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
 import Box from "@mui/material/Box";
 import ToggleButton from "@mui/material/ToggleButton";
 import ToggleButtonGroup from "@mui/material/ToggleButtonGroup";
@@ -25,6 +24,23 @@ import { usePersistence } from "../utils/persistence.hook";
 import { useConfiguration } from "./ConfigProvider";
 import { AddAsteroidIcon, AddShipIcon, AnimatedIcon, StaticIcon } from "./ApplicationBarIcons";
 import { useAsteroids } from "../map/AsteroidProvider";
+
+const TooltipWrapper = ({
+  children,
+  title,
+  disabled,
+}: React.PropsWithChildren<{
+  title: string;
+  disabled: boolean;
+}>) => {
+  if (disabled) return <>{children}</>;
+
+  return (
+    <Tooltip disableFocusListener describeChild title={title}>
+      {children as ReactElement}
+    </Tooltip>
+  );
+};
 
 export default function ApplicationBar() {
   const { size, isCreated, createMap, changeZoom, dragToShip } = useContext(MapContext);
@@ -119,11 +135,11 @@ export default function ApplicationBar() {
           <PlayArrow />
         </IconButton>
         <Box flexGrow={1} />
-        <Tooltip disableFocusListener describeChild title="Centra el mapa en la nave seleccionada">
+        <TooltipWrapper title="Centra el mapa en la nave seleccionada" disabled={commonProps.disabled}>
           <IconButton onClick={(ev) => setAnchorMenuFocus(ev.currentTarget)} {...commonProps}>
             <CenterFocusStrongIcon />
           </IconButton>
-        </Tooltip>
+        </TooltipWrapper>
         <Menu
           id="menu-focus"
           anchorEl={anchorMenuFocus}
@@ -140,32 +156,32 @@ export default function ApplicationBar() {
           ))}
         </Menu>
         <ToggleButtonGroup value={config.creationMode} exclusive onChange={onChangeCreation} sx={{ m: 1 }}>
-          <Tooltip disableFocusListener describeChild title="Añade los botones al mapa para crear naves">
-            <ToggleButton value="ships" aria-label="left aligned" sx={{ p: 0.5 }} size="large" disabled={!isCreated}>
-              <AddShipIcon selected={config.creationMode === "ships"} />
+          <TooltipWrapper title="Añade los botones al mapa para crear naves" disabled={!isCreated}>
+            <ToggleButton value="ships" sx={{ p: 0.5 }} size="large" disabled={!isCreated}>
+              <AddShipIcon selected={isCreated && config.creationMode === "ships"} />
             </ToggleButton>
-          </Tooltip>
-          <Tooltip disableFocusListener describeChild title="Añade los botones al mapa para crear asteroides">
-            <ToggleButton value="asteroids" aria-label="asteroids" sx={{ p: 0.5 }} size="large" disabled={!isCreated}>
-              <AddAsteroidIcon selected={config.creationMode === "asteroids"} />
+          </TooltipWrapper>
+          <TooltipWrapper title="Añade los botones al mapa para crear asteroides" disabled={!isCreated}>
+            <ToggleButton value="asteroids" sx={{ p: 0.5 }} size="large" disabled={!isCreated}>
+              <AddAsteroidIcon selected={isCreated && config.creationMode === "asteroids"} />
             </ToggleButton>
-          </Tooltip>
+          </TooltipWrapper>
         </ToggleButtonGroup>
-        <Tooltip disableFocusListener describeChild title="Habilita /deshabilita choque de asteroides">
+        <TooltipWrapper title="Habilita /deshabilita choque de asteroides" disabled={!isCreated || !asteroids.length}>
           <IconButton onClick={config.toggleBlock} {...commonProps} disabled={!isCreated || !asteroids.length}>
             <Block opacity={config.isBlockEnabled ? 1 : 0.3} />
           </IconButton>
-        </Tooltip>
-        <Tooltip disableFocusListener describeChild title="Habilita / deshabilita todas las animaciones">
+        </TooltipWrapper>
+        <TooltipWrapper title="Habilita / deshabilita todas las animaciones" disabled={commonProps.disabled}>
           <IconButton onClick={onAnimatedSwitch} {...commonProps}>
             {animated ? <AnimatedIcon /> : <StaticIcon />}
           </IconButton>
-        </Tooltip>
-        <Tooltip disableFocusListener describeChild title="Alterna claros / oscuros">
+        </TooltipWrapper>
+        <TooltipWrapper title="Alterna claros / oscuros" disabled={commonProps.disabled}>
           <IconButton onClick={config.toggleColorMode} color="inherit" sx={{ m: 1 }}>
             {theme.palette.mode === "dark" ? <Brightness4Icon /> : <Brightness7Icon />}
           </IconButton>
-        </Tooltip>
+        </TooltipWrapper>
       </Toolbar>
     </AppBar>
   );

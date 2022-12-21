@@ -39,9 +39,8 @@ export const useHexMap = function () {
   }, [cancelShipMovement, shipMoved?.name]);
 
   const blockers = useMemo(() => {
-    onHexMoveCancel();
     return isBlockEnabled ? asteroids : [];
-  }, [asteroids, isBlockEnabled, onHexMoveCancel]);
+  }, [asteroids, isBlockEnabled]);
 
   const onHexMoveStart = useCallback(
     (ship: ShipType) => {
