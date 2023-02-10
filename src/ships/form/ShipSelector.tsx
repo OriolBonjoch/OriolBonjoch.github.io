@@ -1,5 +1,5 @@
 import Masonry from "@mui/lab/Masonry";
-import ShipTemplate from "../assets/FarTrader";
+import ShipTemplate from "../assets/FarTraderJayhawk";
 import { selectableShips } from "../ship-selection";
 
 export const ShipSelector = ({

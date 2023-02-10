@@ -10,7 +10,7 @@ export default function CreateShipForm(props: { x: number; y: number; onClose: (
   const { x, y, onClose } = props;
   const [rot, setRot] = useState(0);
   const [speed, setSpeed] = useState(0);
-  const [texture, setTexture] = useState<string>("Corsair");
+  const [texture, setTexture] = useState<string>("FarTraderJayhawk");
   const [acceleration, setAcceleration] = useState(2);
   const [name, setName] = useState(`Nave #${Math.floor(Math.random() * 1000)}`);
   const [color, setColor] = useState("#F44E3B");

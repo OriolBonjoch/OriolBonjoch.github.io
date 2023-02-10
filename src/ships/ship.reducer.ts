@@ -167,7 +167,7 @@ export function prepareShipReduce(state: StateType, action: PrepareMoveAction) {
       [name]: {
         ...ship,
         nextMove: {
-          acceleration: 0,
+          acceleration: ship.nextMove.acceleration,
           moves,
         } as MoveType,
       },
