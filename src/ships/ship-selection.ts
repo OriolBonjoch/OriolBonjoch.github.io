@@ -1,4 +1,4 @@
-import { Corsair, FarTrader, FarTraderJayhawk, FatTrader, MercenaryCruiser, SeekerMining } from "./assets";
+import { Corsair, FarTrader, FarTraderJayhawk, FatTrader, MercenaryCruiser, SeekerMining, ZunderX } from "./assets";
 
 export const selectableShips: Record<string, React.FC<{ color: string }>> = {
   FarTraderJayhawk: FarTraderJayhawk,
@@ -7,4 +7,5 @@ export const selectableShips: Record<string, React.FC<{ color: string }>> = {
   FatTrader: FatTrader,
   MercenaryCruiser: MercenaryCruiser,
   SeekerMining: SeekerMining,
+  ZunderX: ZunderX,
 };
